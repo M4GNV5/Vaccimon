@@ -13,6 +13,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "bootstrap": "^5.0.2",
+    "eudgc": "^1.0.3",
     "idb": "^6.1.2",
     "jsqr": "^1.4.0",
     "next": "11.0.1",
