@@ -22,7 +22,7 @@ export default function Home() {
         for (const entry of await repo.getAllCerts()) {
           vaccimon.push(await Vaccimon.parse(entry.data))
         }
-        setVaccimon(vaccimon)
+        setVaccimon(vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName)))
       } finally {
         await repo.close()
       }

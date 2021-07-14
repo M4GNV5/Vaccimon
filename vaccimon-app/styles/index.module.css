@@ -1,5 +1,12 @@
+.previews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
 .preview {
   text-align: center;
+  padding: 5px;
 }
 
 .preview img {
