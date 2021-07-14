@@ -16,7 +16,7 @@ export default function Scan() {
     try {
       const videoEl = video.current
       const canvasEl = canvas.current
-      if(!scanning || !videoEl || !canvasEl)
+      if(!scanning || !videoEl || !canvasEl || videoEl.videoWidth === 0 || videoEl.videoHeight === 0)
         return
 
       canvasEl.width = videoEl.videoWidth
@@ -27,14 +27,16 @@ export default function Scan() {
         return
       }
 
+      console.log(videoEl.videoWidth, videoEl.videoHeight)
       ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight)
       const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
 
-      for (const result of await scanImageData(imgData)) {
+      const results = await scanImageData(imgData)
+      await Promise.all(results.map(async result => {
         const data = result.decode()
         if (!data.startsWith('HC1:')) {
           console.log('Not a vaccine certificate, skipping ...')
-          continue
+          return
         }
   
         const cert = await Vaccimon.parse(data)
@@ -52,9 +54,9 @@ export default function Scan() {
   
         setScanning(false)
         router.push('/')
-        return
-      }
+      }))
     } catch (e) {
+      console.error(e)
       alert(e.message)
     }
   }, [router, video, canvas, scanning])
