@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Badge, Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQrcode } from '@fortawesome/free-solid-svg-icons'
-import Repository from '../lib/repository'
+import VaccimonRepo from '../lib/repository'
 import { useEffect, useState } from 'react'
 import styles from '../styles/index.module.css'
 import { Vaccimon } from '../lib/vaccimon'
@@ -14,12 +14,12 @@ export default function Home() {
 
   useEffect(() => {
     async function load () {
-      const repo = new Repository()
+      const repo = new VaccimonRepo()
       try {
         await repo.open()
         
         const vaccimon = []
-        for (const entry of await repo.getAllVaccimon()) {
+        for (const entry of await repo.getAllCerts()) {
           vaccimon.push(await Vaccimon.parse(entry.data))
         }
         setVaccimon(vaccimon)

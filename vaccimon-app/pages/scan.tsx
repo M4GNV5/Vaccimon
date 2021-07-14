@@ -2,7 +2,7 @@ import { createRef, useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Container } from 'react-bootstrap'
 import { scanImageData } from 'zbar.wasm'
-import Repository from '../lib/repository'
+import VaccimonRepo from '../lib/repository'
 import { Vaccimon } from '../lib/vaccimon'
 import styles from '../styles/scan.module.css'
 
@@ -45,10 +45,10 @@ export default function Scan() {
         return
       }
 
-      const repo = new Repository()
+      const repo = new VaccimonRepo()
       try {
         await repo.open()
-        await repo.addVaccimon({
+        await repo.addCert({
           id: cert.id,
           data: data
         })
