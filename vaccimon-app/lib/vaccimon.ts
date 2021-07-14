@@ -23,11 +23,11 @@ const vaccines: {[key: string]: string} = {
 export class Vaccimon {
 
   _cert: EuDgcCert
-  _vaccination: number
+  _vaccinationNum: number
 
   constructor(cert: EuDgcCert, vaccination: number = 0) {
     this._cert = cert
-    this._vaccination = vaccination
+    this._vaccinationNum = vaccination
   }
 
   static async parse (data: string, vaccination: number = 0) {
@@ -38,8 +38,12 @@ export class Vaccimon {
     return new Vaccimon(cert, vaccination)
   }
 
+  private get _vaccination(): EuDgcVaccincation {
+    return this._cert.v[this._vaccinationNum]
+  }
+
   get id(): string {
-    return this._cert.v[this._vaccination].ci
+    return this._vaccination.ci
   }
 
   get firstName(): string {
@@ -59,16 +63,23 @@ export class Vaccimon {
   }
 
   get vaccine(): string {
-    const key = this._cert.v[this._vaccination].mp
+    const key = this._vaccination.mp
     return vaccines[key] || key
   }
 
   get vaccinationDate(): Date {
-    return new Date(this._cert.v[this._vaccination].dt)
+    return new Date(this._vaccination.dt)
+  }
+
+  get avatarUrl(): string {
+    // TODO: use a self hosted image service
+    // TODO: hash the id?
+    const seed = this.id.substr(this.id.length - 4)
+    return `https://api.hello-avatar.com/adorables/${seed}`
   }
 
   get isFullyVaccinated(): boolean {
-    return this._cert.v[this._vaccination].sd === this._cert.v[this._vaccination].dn
+    return this._vaccination.sd === this._vaccination.dn
   }
 
 }

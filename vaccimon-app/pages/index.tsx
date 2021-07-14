@@ -51,7 +51,7 @@ export default function Home() {
           <Container className={styles.previews}>
             {vaccimon && vaccimon.map(v =>
               <div key={v.id} className={styles.preview}>
-                <Image src="http://placekitten.com/128/128" width={128} height={128} alt="" />
+                <Image src={v.avatarUrl} width={128} height={128} alt="" />
                 <div className={styles.name}>
                   {v.fullName}
                 </div>
