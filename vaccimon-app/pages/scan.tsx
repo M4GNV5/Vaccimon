@@ -12,14 +12,6 @@ export default function Scan() {
   const canvas = createRef<HTMLCanvasElement>()
   const [scanning, setScanning] = useState(true)
 
-  async function parseQR (imgData: ImageData): Promise<string | null> {
-    const result = await scanImageData(imgData)
-    if (result.length === 0) {
-      return null
-    }
-    return result[0].decode()
-  }
-
   const scanImage = useCallback(async function() {
     try {
       const videoEl = video.current
@@ -38,26 +30,30 @@ export default function Scan() {
       ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight)
       const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
 
-      const data = await parseQR(imgData)
-      const cert = data && await Vaccimon.parse(data)
+      for (const result of await scanImageData(imgData)) {
+        const data = result.decode()
+        if (!data.startsWith('HC1:')) {
+          console.log('Not a vaccine certificate, skipping ...')
+          continue
+        }
+  
+        const cert = await Vaccimon.parse(data)
 
-      if (!data || !cert) {
+        const repo = new VaccimonRepo()
+        try {
+          await repo.open()
+          await repo.addCert({
+            id: cert.id,
+            data: data
+          })
+        } finally {
+          repo.close()
+        }
+  
+        setScanning(false)
+        router.push('/')
         return
       }
-
-      const repo = new VaccimonRepo()
-      try {
-        await repo.open()
-        await repo.addCert({
-          id: cert.id,
-          data: data
-        })
-      } finally {
-        repo.close()
-      }
-
-      setScanning(false)
-      router.push('/')
     } catch (e) {
       alert(e.message)
     }
