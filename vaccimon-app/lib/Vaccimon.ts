@@ -1,4 +1,4 @@
-import { EuDgc, EuDgcCert, EuDgcVaccincation } from 'eudgc'
+import { EuDgcCert, EuDgcVaccincation } from 'eudgc'
 
 // possible values of `mp` field
 // see https://ec.europa.eu/health/sites/default/files/ehealth/docs/digital-green-value-sets_en.pdf
@@ -33,11 +33,6 @@ export default class Vaccimon {
     this.lastName = cert.nam.gn
     this.dateOfBirth = new Date(cert.dob)
     this.vaccination = cert.v[vaccination]
-  }
-
-  async create(encoded: string): Promise<Vaccimon> {
-    const data = await EuDgc.parse(encoded)
-    return new Vaccimon(data)
   }
 
   getFullName(): string {

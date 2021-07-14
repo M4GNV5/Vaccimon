@@ -28,7 +28,7 @@ export default class Repository {
     })
   }
 
-  async close () {
+  close () {
     this.db?.close()
   }
 
