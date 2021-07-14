@@ -22,12 +22,10 @@ const vaccines: {[key: string]: string} = {
 
 export class Vaccimon {
 
-  _id: string
   _cert: EuDgcCert
   _vaccination: number
 
-  constructor(id: string, cert: EuDgcCert, vaccination: number = 0) {
-    this._id = id
+  constructor(cert: EuDgcCert, vaccination: number = 0) {
     this._cert = cert
     this._vaccination = vaccination
   }
@@ -37,11 +35,11 @@ export class Vaccimon {
       throw new Error('Invalid certificate')
     }
     const cert = await window.EuDgc_parse(data)
-    return new Vaccimon(cert.v[vaccination].ci, cert)
+    return new Vaccimon(cert, vaccination)
   }
 
   get id(): string {
-    return this._id
+    return this._cert.v[this._vaccination].ci
   }
 
   get firstName(): string {
