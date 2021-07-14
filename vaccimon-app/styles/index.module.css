@@ -5,18 +5,62 @@
 }
 
 .preview {
-  text-align: center;
   padding: 5px;
+  width: 90vw;
+  min-height: calc(1.4 * 90vw);
+  margin-bottom: 20px;
 }
 
+.imageContainer {
+  display: flex;
+  justify-content: center;
+}
 .preview img {
   border-radius: 5px;
 }
 
-.preview h2 {
-  font-size: 12pt;
+.name {
+  font-size: 1.4rem;
+  font-weight: bold;
 }
 
-.name {
+.vaccinationKind {
+  font-size: 1.4rem;
+  float: right;
+}
+
+.card-comirnaty {
+  background-color: rgba(1, 76, 7, 0.2);
+}
+.card-spikevax {
+  background-color: rgba(158, 9, 11, 0.2);
+}
+.card-vaxzevria {
+  background-color: rgba(85, 3, 191, 0.2);
+}
+.card-janssen {
+  background-color: rgba(191, 175, 3, 0.2);
+}
+.card-other {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.properties {
+  margin-top: 10px;
+}
+.propName {
+  margin-left: 10px;
   font-weight: bold;
+}
+.propValue {
+  margin-right: 10px;
+  float: right;
+}
+
+.showQRButton {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
