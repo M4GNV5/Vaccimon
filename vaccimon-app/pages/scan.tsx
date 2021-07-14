@@ -1,8 +1,10 @@
 import { createRef, useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { Container } from 'react-bootstrap'
 import { scanImageData } from 'zbar.wasm'
 import Repository from '../lib/repository'
 import { Vaccimon } from '../lib/vaccimon'
+import styles from '../styles/scan.module.css'
 
 export default function Scan() {
   const router = useRouter()
@@ -15,35 +17,33 @@ export default function Scan() {
     if (result.length === 0) {
       return null
     }
-    const qrData = result[0].decode()
-    if (!qrData.startsWith('HC1:')) {
-      return null
-    }
-    return qrData
+    return result[0].decode()
   }
 
   const scanImage = useCallback(async function() {
-    const videoEl = video.current
-    const canvasEl = canvas.current
-    if(!scanning || !videoEl || !canvasEl)
-      return
+    try {
+      const videoEl = video.current
+      const canvasEl = canvas.current
+      if(!scanning || !videoEl || !canvasEl)
+        return
 
-    canvasEl.width = videoEl.videoWidth
-    canvasEl.height = videoEl.videoHeight
+      canvasEl.width = videoEl.videoWidth
+      canvasEl.height = videoEl.videoHeight
 
-    const ctx = canvasEl.getContext('2d')
-    if(!ctx) {
-      return
-    }
+      const ctx = canvasEl.getContext('2d')
+      if(!ctx) {
+        return
+      }
 
-    ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight)
-    const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
+      ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight)
+      const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
 
-    const data = await parseQR(imgData)
-    const cert = data && await Vaccimon.parse(data)
+      const data = await parseQR(imgData)
+      const cert = data && await Vaccimon.parse(data)
 
-    if (data && cert) {
-      setScanning(false)
+      if (!data || !cert) {
+        return
+      }
 
       const repo = new Repository()
       try {
@@ -56,9 +56,11 @@ export default function Scan() {
         repo.close()
       }
 
+      setScanning(false)
       router.push('/')
+    } catch (e) {
+      alert(e.message)
     }
-
   }, [router, video, canvas, scanning])
 
   useEffect(() => {
@@ -68,7 +70,6 @@ export default function Scan() {
       }
   
       const videoEl = video.current
-      const canvasEl = canvas.current
 
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
@@ -83,9 +84,6 @@ export default function Scan() {
       await new Promise(resolve => {
         videoEl.onloadedmetadata = resolve
       })
-
-      canvasEl.width = videoEl.videoWidth
-      canvasEl.height = videoEl.videoHeight
     }
     startVideo()
 
@@ -94,11 +92,12 @@ export default function Scan() {
   }, [video, canvas, scanImage])
 
   return (
-    <>
-      <div className="container">
-        <video className="scan-video" ref={video} />
-        <canvas className="scan-canvas" ref={canvas} />
+    <Container>
+      <video className={styles.scanVideo} ref={video} />
+      <canvas className={styles.scanCanvas} ref={canvas} />
+      <div className={styles.legend}>
+        Point your camera at a certificate.
       </div>
-    </>
+    </Container>
   )
 }

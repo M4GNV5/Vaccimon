@@ -14,18 +14,3 @@ a {
 * {
   box-sizing: border-box;
 }
-
-
-
-.scan-video {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  
-  width: 100vw;
-  height: auto;
-}
-.scan-canvas {
-  display: none;
-}
