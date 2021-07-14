@@ -20,15 +20,19 @@ const vaccines: {[key: string]: string} = {
 }
 
 export default class Vaccimon {
-  data: EuDgcCert
-  lastVaccination: EuDgcVaccincation
 
-  constructor(decoded: EuDgcCert) {
-    this.data = decoded
+  id: string
+  firstName: string
+  lastName: string
+  dateOfBirth: Date
+  vaccination: EuDgcVaccincation
 
-    const sorted = [...this.data.v]
-    sorted.sort((a, b) => a.dt.localeCompare(b.dt))
-    this.lastVaccination = sorted[0]
+  constructor(cert: EuDgcCert, vaccination: number = 0) {
+    this.id = cert.v[vaccination].ci
+    this.firstName = cert.nam.fn
+    this.lastName = cert.nam.gn
+    this.dateOfBirth = new Date(cert.dob)
+    this.vaccination = cert.v[vaccination]
   }
 
   async create(encoded: string): Promise<Vaccimon> {
@@ -37,28 +41,32 @@ export default class Vaccimon {
   }
 
   getFullName(): string {
-    return `${this.data.nam.fn} ${this.data.nam.gn}`
+    return `${this.firstName} ${this.lastName}`
   }
+
   getFirstName(): string {
-    return this.data.nam.fn
+    return this.firstName
   }
+
   getLastName(): string {
-    return this.data.nam.gn
+    return this.lastName
   }
 
   getDateOfBirth(): Date {
-    return new Date(this.data.dob)
+    return new Date(this.dateOfBirth)
   }
 
   getVaccine(): string {
-    const key = this.lastVaccination.mp
+    const key = this.vaccination.mp
     return vaccines[key] || key
   }
+
   getVaccinationDate(): Date {
-    return new Date(this.lastVaccination.dt)
+    return new Date(this.vaccination.dt)
   }
 
   isFullyVaccinated(): boolean {
-    return this.lastVaccination.sd === this.lastVaccination.dn
+    return this.vaccination.sd === this.vaccination.dn
   }
+
 }
