@@ -27,7 +27,6 @@ export default function Scan() {
         return
       }
 
-      console.log(videoEl.videoWidth, videoEl.videoHeight)
       ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight)
       const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
 
