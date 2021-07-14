@@ -1,0 +1,15 @@
+.preview {
+  text-align: center;
+}
+
+.preview img {
+  border-radius: 5px;
+}
+
+.preview h2 {
+  font-size: 12pt;
+}
+
+.name {
+  font-weight: bold;
+}

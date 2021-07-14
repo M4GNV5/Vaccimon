@@ -1,11 +1,13 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Button, Container } from 'react-bootstrap'
+import Image from 'next/image'
+import { Badge, Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQrcode } from '@fortawesome/free-solid-svg-icons'
 import Repository from '../lib/repository'
 import { useEffect, useState } from 'react'
-import Vaccimon from '../lib/Vaccimon'
+import styles from '../styles/index.module.css'
+import { Vaccimon } from '../lib/vaccimon'
 
 export default function Home() {
   const [vaccimon, setVaccimon] = useState<Vaccimon[]>()
@@ -15,7 +17,12 @@ export default function Home() {
       const repo = new Repository()
       try {
         await repo.open()
-        setVaccimon(await repo.getAllVaccimon())
+        
+        const vaccimon = []
+        for (const entry of await repo.getAllVaccimon()) {
+          vaccimon.push(await Vaccimon.parse(entry.data))
+        }
+        setVaccimon(vaccimon)
       } finally {
         await repo.close()
       }
@@ -29,21 +36,38 @@ export default function Home() {
         <title>Vaccímon</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Container>
-        <h1>Vaccimon</h1>
-        <Link href="/scan" passHref>
-          <Button>
-            <FontAwesomeIcon icon={faQrcode} />
-            {' '}
-            Scan a new Vaccimon
-          </Button>
-        </Link>
-        {vaccimon && vaccimon.map(v =>
-          <div key={v.id}>
-            <h2>{v.firstName} {v.lastName}</h2>
-          </div>
-        )}
-      </Container>
+      <>
+        <Navbar bg="light">
+          <Container>
+            <Navbar.Brand>Vaccimon</Navbar.Brand>
+            <Nav.Link href="/scan">
+              <FontAwesomeIcon icon={faQrcode} />
+              {' '}
+              Scan a Vaccimon
+            </Nav.Link>
+          </Container>
+        </Navbar>
+        <Container>
+          Your Vaccidex:
+          <Container className={styles.previews}>
+            {vaccimon && vaccimon.map(v =>
+              <div key={v.id} className={styles.preview}>
+                <Image src="http://placekitten.com/128/128" width={128} height={128} alt="" />
+                <div className={styles.name}>
+                  {v.fullName}
+                </div>
+                <div className={styles.type}>
+                  {v.vaccine}
+                  {' '}
+                  <Badge bg="primary">
+                    {v.isFullyVaccinated ? '2' : '1'}
+                  </Badge>
+                </div>
+              </div>
+            )}
+          </Container>
+        </Container>
+      </>
     </>
   )
 }

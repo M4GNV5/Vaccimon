@@ -1,5 +1,8 @@
 module.exports = {
   reactStrictMode: true,
+  images: {
+    domains: ['placekitten.com']
+  },
   webpack: config => {
     // required by zbar.wasm
     config.module.rules.push({
@@ -10,5 +13,5 @@ module.exports = {
       }
     })
     return config
-  },
+  }
 }

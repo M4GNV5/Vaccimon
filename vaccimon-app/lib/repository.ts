@@ -1,17 +1,21 @@
 import { IDBPDatabase, openDB, DBSchema } from 'idb'
-import Vaccimon from './Vaccimon'
 
 const DB_NAME = 'vaccimon'
-const CERT_STORE_NAME = 'vaccimon'
+const CERT_STORE_NAME = 'certificates'
 
 interface RepositorySchema extends DBSchema {
   [CERT_STORE_NAME]: {
     key: string
-    value: Vaccimon
+    value: VaccimonCert
   }
 }
 
-export default class Repository {
+export interface VaccimonCert {
+  id: string
+  data: string
+}
+
+export default class VaccimonRepository {
   db?: IDBPDatabase<RepositorySchema>
 
   constructor () {
@@ -32,7 +36,7 @@ export default class Repository {
     this.db?.close()
   }
 
-  async getAllVaccimon (): Promise<Vaccimon[]> {
+  async getAllVaccimon (): Promise<VaccimonCert[]> {
     if (!this.db) {
       throw new Error('Repository not opened')
     }
@@ -40,7 +44,7 @@ export default class Repository {
     return await this.db.getAll(CERT_STORE_NAME)
   }
 
-  async addVaccimon (vaccimon: Vaccimon): Promise<void> {
+  async addVaccimon (vaccimon: VaccimonCert): Promise<void> {
     if (!this.db) {
       throw new Error('Repository not opened')
     }
@@ -48,7 +52,7 @@ export default class Repository {
     await this.db.add(CERT_STORE_NAME, vaccimon)
   }
 
-  async deleteVaccimon (vaccimon: Vaccimon): Promise<void> {
+  async deleteVaccimon (vaccimon: VaccimonCert): Promise<void> {
     if (!this.db) {
       throw new Error('Repository not opened')
     }

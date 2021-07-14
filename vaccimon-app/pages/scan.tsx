@@ -2,8 +2,7 @@ import { createRef, useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { scanImageData } from 'zbar.wasm'
 import Repository from '../lib/repository'
-import Vaccimon from '../lib/Vaccimon'
-import { EuDgcCert } from 'eudgc'
+import { Vaccimon } from '../lib/vaccimon'
 
 export default function Scan() {
   const router = useRouter()
@@ -11,7 +10,7 @@ export default function Scan() {
   const canvas = createRef<HTMLCanvasElement>()
   const [scanning, setScanning] = useState(true)
 
-  async function parseCert (imgData: ImageData): Promise<EuDgcCert | null> {
+  async function parseQR (imgData: ImageData): Promise<string | null> {
     const result = await scanImageData(imgData)
     if (result.length === 0) {
       return null
@@ -20,7 +19,7 @@ export default function Scan() {
     if (!qrData.startsWith('HC1:')) {
       return null
     }
-    return await window.EuDgc_parse(qrData)
+    return qrData
   }
 
   const scanImage = useCallback(async function() {
@@ -39,15 +38,20 @@ export default function Scan() {
 
     ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight)
     const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
-    const cert = await parseCert(imgData)
 
-    if (cert) {
+    const data = await parseQR(imgData)
+    const cert = data && await Vaccimon.parse(data)
+
+    if (data && cert) {
       setScanning(false)
-  
+
       const repo = new Repository()
       try {
         await repo.open()
-        await repo.addVaccimon(new Vaccimon(cert))
+        await repo.addVaccimon({
+          id: cert.id,
+          data: data
+        })
       } finally {
         repo.close()
       }
