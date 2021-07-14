@@ -17,12 +17,11 @@ export default function Home() {
       const repo = new VaccimonRepo()
       try {
         await repo.open()
+        const certs = await repo.getAllCerts()
+        const vaccimon = await Promise.all(certs.map(x => Vaccimon.parse(x.data)))
         
-        const vaccimon = []
-        for (const entry of await repo.getAllCerts()) {
-          vaccimon.push(await Vaccimon.parse(entry.data))
-        }
-        setVaccimon(vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName)))
+        vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName))
+        setVaccimon(vaccimon)
       } finally {
         await repo.close()
       }
