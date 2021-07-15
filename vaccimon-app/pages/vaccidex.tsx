@@ -33,34 +33,18 @@ export default function Vaccidex() {
 
   return (
     <AppContainer>
-      <AppNavbar title="Overview">
-        <Nav.Link href="/scan">
-          <FontAwesomeIcon icon={faQrcode} />
-          {' '}
-          Scan a Vaccimon
-        </Nav.Link>
-      </AppNavbar>
-      <Container>
-        Your Vaccidex:
-        <Container className={styles.previews}>
-          {vaccimon && vaccimon.map(v =>
-            <Link key={v.id} href={`/card/${Buffer.from(v.id, 'binary').toString('base64')}`} passHref>
-              <a className={styles.preview}>
-                <Image src={v.avatarUrl} width={128} height={128} alt="" />
-                <div className={styles.name}>
-                  {v.fullName}
-                </div>
-                <div className={styles.type}>
-                  {v.vaccine}
-                  {' '}
-                  <Badge bg="primary">
-                    {v.isFullyVaccinated ? '2' : '1'}
-                  </Badge>
-                </div>
-              </a>
-            </Link>
-          )}
-        </Container>
+      <AppNavbar title="Vaccidex" />
+      <Container className={styles.previews}>
+        {vaccimon && vaccimon.map(v =>
+          <Link key={v.id} href={`/card/${Buffer.from(v.id, 'binary').toString('base64')}`} passHref>
+            <a className={styles.preview}>
+              <Image src={v.avatarUrl} width={64} height={64} alt="" />
+              <div className={styles.name}>
+                {v.lastName}
+              </div>
+            </a>
+          </Link>
+        )}
       </Container>
       <AppTabbar />
     </AppContainer>

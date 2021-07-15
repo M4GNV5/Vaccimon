@@ -7,16 +7,17 @@
 .preview {
   text-align: center;
   padding: 5px;
+  margin: 10px;
+  max-width: calc(33% - 20px);
 }
 
 .preview img {
   border-radius: 5px;
 }
 
-.preview h2 {
-  font-size: 12pt;
-}
-
 .name {
-  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
 }
