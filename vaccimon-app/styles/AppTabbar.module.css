@@ -30,4 +30,8 @@
 .icon {
   font-size: 18pt;
 }
-  
+
+.spacer {
+  /* 56px footer height + iOS home bar height */
+  height: calc(56px + 10px + env(safe-area-inset-bottom, 0px));
+}

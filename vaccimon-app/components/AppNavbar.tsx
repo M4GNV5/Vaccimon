@@ -33,7 +33,7 @@ export default function AppNavbar ({ title, children }: AppNavbarProps) {
         <link href="/favicon512.png" rel="icon" type="image/png" sizes="512x512" />
       </Head>
 
-      <Navbar bg="light">
+      <Navbar fixed="top" bg="light">
         <Container>
           <Navbar.Brand>
             {title}
@@ -42,6 +42,8 @@ export default function AppNavbar ({ title, children }: AppNavbarProps) {
           {children}
         </Container>
       </Navbar>
+
+      <div className={styles.spacer} />
     </>
   )
 }
