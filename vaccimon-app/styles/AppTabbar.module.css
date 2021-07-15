@@ -1,5 +1,7 @@
 .navbar {
   position: fixed;
+  left: 0;
+  bottom: 0;
   width: 100%;
   /* prevent iOS home bar from overlapping tab bar */
   bottom: env(safe-area-inset-bottom, 0px);
