@@ -65,6 +65,7 @@ export default function Scan() {
   }, [router, video, canvas, scanning])
 
   useEffect(() => {
+    let mediaStream: MediaStream | null = null
     async function startVideo() {
       if (!video.current || !canvas.current) {
         return
@@ -72,7 +73,7 @@ export default function Scan() {
   
       const videoEl = video.current
 
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
+      mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
           facingMode: 'environment'
@@ -89,7 +90,12 @@ export default function Scan() {
     startVideo()
 
     const interval = setInterval(() => scanImage(), 500)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if(mediaStream) {
+        mediaStream.getTracks().map(x => x.stop())
+      }
+    }
   }, [video, canvas, scanImage])
 
   return (
