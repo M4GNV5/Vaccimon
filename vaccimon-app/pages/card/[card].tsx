@@ -21,6 +21,9 @@ import SwipableViews from 'react-swipeable-views'
 import VaccimonRepo from '../../lib/repository'
 import styles from '../../styles/card.module.css'
 import { Vaccimon } from '../../lib/vaccimon'
+import AppContainer from '../../components/AppContainer'
+import AppNavbar from '../../components/AppNavbar'
+import AppTabbar from '../../components/AppTabbar'
 
 const icons: {[key: string]: IconDefinition[]} = {
   "Comirnaty": [faDna, faChessPawn],
@@ -43,11 +46,7 @@ export default function Card() {
       return 0
     }
     const id = Buffer.from(router.query['card'] as string, 'base64').toString('binary')
-    console.log(id)
-    console.log(vaccimon)
-    const index = vaccimon.findIndex(x => x.id === id) ?? 0
-    console.log(index)
-    return 1
+    return vaccimon.findIndex(x => x.id === id) ?? 0
   }, [router.query, vaccimon])
 
   function getIcons(v: Vaccimon): IconDefinition[] {
@@ -91,22 +90,8 @@ export default function Card() {
   }, [])
 
   return (
-    <>
-      <Head>
-        <title>Vaccímon</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <>
-        <Navbar bg="light">
-          <Container>
-            <Navbar.Brand>Vaccimon</Navbar.Brand>
-            <Nav.Link href="/scan">
-              <FontAwesomeIcon icon={faQrcode} />
-              {' '}
-              Scan a Vaccimon
-            </Nav.Link>
-          </Container>
-        </Navbar>
+    <AppContainer>
+        <AppNavbar title="Vaccidex" />
         <Container>
           {vaccimon &&
             <SwipableViews
@@ -149,7 +134,7 @@ export default function Card() {
             </SwipableViews>
           }
         </Container>
-      </>
-    </>
+        <AppTabbar />
+    </AppContainer>
   )
 }
