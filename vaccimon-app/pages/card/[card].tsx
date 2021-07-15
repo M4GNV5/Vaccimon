@@ -6,14 +6,11 @@ import { Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   IconDefinition,
-  faChessPawn,
+  faCar,
   faCrow,
   faDna,
   faVirus,
-  faQrcode,
   faSyringe,
-  faCheck,
-  faTimes,
   faFlagUsa,
   faTint,
 } from '@fortawesome/free-solid-svg-icons'
@@ -26,7 +23,7 @@ import AppNavbar from '../../components/AppNavbar'
 import AppTabbar from '../../components/AppTabbar'
 
 const icons: {[key: string]: IconDefinition[]} = {
-  "Comirnaty": [faDna, faChessPawn],
+  "Comirnaty": [faDna, faCar],
   "Spikevax": [faDna, faCrow],
   "Vaxzevria": [faVirus, faTint],
   "COVID-19 Vaccine Janssen": [faVirus, faFlagUsa],
