@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Container, Nav, ListGroup } from 'react-bootstrap'
+import { Container, ListGroup } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQrcode } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import VaccimonRepo from '../lib/repository'
 import { Vaccimon } from '../lib/vaccimon'
 import AppContainer from '../components/AppContainer'
 import AppNavbar from '../components/AppNavbar'
 import AppTabbar from '../components/AppTabbar'
-import styles from '../styles/achievements.module.css'
 
 export enum AchievementDiffuculty {
   Easy,
@@ -123,33 +122,27 @@ export default function Home() {
     load()
   }, [])
 
-  function renderAchievement(achievement: Achievement) {
+  function renderAchievement(achievement: Achievement, achieved: boolean) {
     return (
-      <ListGroup.Item key={achievement.name}>
-        <b>{achievement.name}</b><br />
-        {achievement.description}
+      <ListGroup.Item key={achievement.name} disabled={!achieved}>
+        <div className="float-start">
+          <b>{achievement.name}</b><br />
+          {achievement.description}
+        </div>
+        <div className="float-end">
+          {achieved && <FontAwesomeIcon icon={faCheck} />}
+        </div>
       </ListGroup.Item>
     )
   }
 
   return (
     <AppContainer>
-      <AppNavbar title="Overview">
-        <Nav.Link href="/scan">
-          <FontAwesomeIcon icon={faQrcode} />
-          {' '}
-          Scan a Vaccimon
-        </Nav.Link>
-      </AppNavbar>
+      <AppNavbar title="Achievements" />
       <Container>
-        <h3 className={styles.title}>Unlocked</h3>
-        <ListGroup>
-          {unlockedAchievements.map(renderAchievement)}
-        </ListGroup>
-
-        <h3 className={styles.title}>Missing</h3>
-        <ListGroup>
-          {achievements.filter(x => unlockedAchievements.indexOf(x) === -1).map(renderAchievement)}
+        <ListGroup variant="flush">
+          {unlockedAchievements.map(x => renderAchievement(x, true))}
+          {achievements.filter(x => unlockedAchievements.indexOf(x) === -1).map(x => renderAchievement(x, false))}
         </ListGroup>
       </Container>
       <AppTabbar />
