@@ -32,27 +32,31 @@ export default function Scan() {
 
       const results = await scanImageData(imgData)
       await Promise.all(results.map(async result => {
-        const data = result.decode()
-        if (!data.startsWith('HC1:')) {
-          console.log('Not a vaccine certificate, skipping ...')
-          return
-        }
-  
-        const cert = await Vaccimon.parse(data)
-
-        const repo = new VaccimonRepo()
         try {
-          await repo.open()
-          await repo.addCert({
-            id: cert.id,
-            data: data
-          })
-        } finally {
-          repo.close()
+          const data = result.decode().trim()  
+          const cert = await Vaccimon.parse(data)
+
+          const repo = new VaccimonRepo()
+          try {
+            await repo.open()
+            await repo.addCert({
+              id: cert.id,
+              data: data
+            })
+          } finally {
+            repo.close()
+          }
+    
+          setScanning(false)
+          router.push('/')
+        } catch (e) {
+          if (e instanceof TypeError) {
+            console.error('Not a valid certificate:', e)
+            return
+          } else {
+            throw e
+          }
         }
-  
-        setScanning(false)
-        router.push('/')
       }))
     } catch (e) {
       console.error(e)

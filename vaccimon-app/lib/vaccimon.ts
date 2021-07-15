@@ -31,9 +31,6 @@ export class Vaccimon {
   }
 
   static async parse (data: string, vaccination: number = 0) {
-    if (!data.startsWith('HC1:')) {
-      throw new Error('Invalid certificate')
-    }
     const cert = await window.EuDgc_parse(data)
     return new Vaccimon(cert, vaccination)
   }
