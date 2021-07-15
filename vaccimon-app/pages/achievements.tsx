@@ -82,6 +82,16 @@ export const achievements: Achievement[] = [
     difficulty: AchievementDiffuculty.Hard,
     condition: vaccidex => vaccidex.length >= 100,
   },
+  {
+    name: 'Maeiyr',
+    description: 'Scan three different versions of Meir',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => new Set(vaccidex
+        .map(x => x.lastName.match(/m(a|e)(i|y)(a|e)?r$/ui))
+        .filter(x => x)
+        .map(x => (x as RegExpMatchArray)[0])
+      ).size >= 3,
+  },
 ]
 
 export function calculateAchievements(vaccidex: Vaccimon[]): Achievement[] {
