@@ -48,7 +48,7 @@ export default function Scan() {
           }
     
           setScanning(false)
-          router.push('/')
+          router.push('/vaccidex')
         } catch (e) {
           if (e instanceof TypeError) {
             console.error('Not a valid certificate:', e)
