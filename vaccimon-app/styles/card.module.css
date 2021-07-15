@@ -36,7 +36,7 @@
   background: linear-gradient(45deg, rgba(158, 9, 11, 0.2), rgba(158, 9, 11, 0.1));
 }
 .card-vaxzevria {
-  background-color: linear-gradient(45deg, gba(85, 3, 191, 0.2), rgba(85, 3, 191, 0.1));
+  background-color: linear-gradient(45deg, rgba(85, 3, 191, 0.2), rgba(85, 3, 191, 0.1));
 }
 .card-janssen {
   background-color: linear-gradient(45deg, rgba(191, 175, 3, 0.2), rgba(191, 175, 3, 0.1));
