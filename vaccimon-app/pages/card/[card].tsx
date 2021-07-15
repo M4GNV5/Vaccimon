@@ -105,30 +105,30 @@ export default function Card() {
                     {v.fullName}
                   </span>
                   <span className={styles.vaccinationKind}>
-                    {getIcons(v).map((icon, i) => <FontAwesomeIcon key={i} icon={icon} fixedWidth />)}
+                    {getIcons(v).map((icon, i) => <FontAwesomeIcon key={i} icon={icon} size="xs" fixedWidth />)}
                   </span>
                   <div className={styles.imageContainer}>
                     <Image src={v.avatarUrl} width={245} height={245} alt="" />
                   </div>
                   <div className={styles.properties}>
                     <div>
-                      <span className={styles.propName}>Geburtstag</span>
-                      <span className={styles.propValue}>{v.dateOfBirth.toLocaleDateString()}</span>
-                    </div>
-                    <div>
-                      <span className={styles.propName}>Impfdatum</span>
-                      <span className={styles.propValue}>{v.vaccinationDate.toLocaleDateString()}</span>
-                    </div>
-                    <div>
-                      <span className={styles.propName}>Impfstoff</span>
+                      <span className={styles.propName}>Vaccine</span>
                       <span className={styles.propValue}>{v.vaccine}</span>
                     </div>
                     <div>
-                      <span className={styles.propName}>Vollständig</span>
-                      <span className={styles.propValue}><FontAwesomeIcon icon={v.isFullyVaccinated ? faCheck : faTimes} fixedWidth /></span>
+                      <span className={styles.propName}>Level</span>
+                      <span className={styles.propValue}>{v.isFullyVaccinated ? '2' : '1'}</span>
                     </div>
-                    <Button className={styles.showQRButton}>QR Code anzeigen</Button>
+                    <div>
+                      <span className={styles.propName}>Birthday</span>
+                      <span className={styles.propValue}>{v.dateOfBirth.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    </div>
+                    <div>
+                      <span className={styles.propName}>Vaccination day</span>
+                      <span className={styles.propValue}>{v.vaccinationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    </div>
                   </div>
+                  <Button className={styles.showQRButton} variant="secondary">Show certificate</Button>
                 </div>
               )}
             </SwipableViews>
