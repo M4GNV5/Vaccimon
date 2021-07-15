@@ -13,7 +13,7 @@ const vaccines: {[key: string]: string} = {
   "Sputnik-V": "Sputnik V",
   "Convidecia": "Convidecia",
   "EpiVacCorona": "EpiVacCorona",
-  "BBIBP-CorV": "BBIBP-CorV  Vaccine medicinal",
+  "BBIBP-CorV": "BBIBP-CorV Vaccine medicinal",
   "Inactivated-SARS-CoV-2-Vero-Cell": "Inactivated SARS-CoV-2 (Vero Cell)",
   "CoronaVac": "CoronaVac",
   "Covaxin": "Covaxin",
@@ -75,8 +75,11 @@ export class Vaccimon {
     return `https://api.hello-avatar.com/adorables/${seed}`
   }
 
+  get certificateSigner(): string {
+    return this._vaccination.is
+  }
+
   get isFullyVaccinated(): boolean {
     return this._vaccination.sd === this._vaccination.dn
   }
-
 }

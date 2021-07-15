@@ -28,46 +28,107 @@ export const achievements: Achievement[] = [
     condition: vaccidex => vaccidex.length > 0,
   },
   {
+    name: 'Fully Vaccinated',
+    description: 'Catch both levels of the same Vaccímon',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.fullName === y.fullName)),
+  },
+  {
     name: 'German Engineering',
     description: 'Catch your first Comirnaty Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
-    condition: vaccidex => !!vaccidex.find(x => x.vaccine === 'Comirnaty'),
+    condition: vaccidex => vaccidex.some(x => x.vaccine === 'Comirnaty'),
   },
   {
     name: 'Modörna',
     description: 'Catch your first Spikevax Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
-    condition: vaccidex => !!vaccidex.find(x => x.vaccine === 'Spikevax'),
+    condition: vaccidex => vaccidex.some(x => x.vaccine === 'Spikevax'),
   },
   {
     name: 'Old peoples Vaccine',
     description: 'Catch your first Vaxzevria Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
-    condition: vaccidex => !!vaccidex.find(x => x.vaccine === 'Vaxzevria'),
+    condition: vaccidex => vaccidex.some(x => x.vaccine === 'Vaxzevria'),
   },
   {
     name: 'FREEDOM!',
     description: 'Catch your first Janssen Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
-    condition: vaccidex => !!vaccidex.find(x => x.vaccine === 'Janssen'),
+    condition: vaccidex => vaccidex.some(x => x.vaccine === 'COVID-19 Vaccine Janssen'),
   },
   {
     name: 'We are Family',
     description: 'Catch three or more Vaccímon with the same family name',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => !!vaccidex.find(x => vaccidex.filter(y => x.lastName === y.lastName).length > 2),
+    condition: vaccidex => vaccidex.some(x => vaccidex.filter(y => x.lastName === y.lastName).length > 2),
   },
   {
     name: 'This is Technology Test!',
-    description: 'Scan a test Vaccímon',
+    description: 'Catch a test Vaccímon',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => !!vaccidex.find(x => x.lastName === 'Mustermann'),
+    condition: vaccidex => vaccidex.some(x => x.lastName === 'Mustermann'),
+  },
+  {
+    name: 'Is this digital?',
+    description: 'Catch a Vaccímon older than 80 years',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => {
+      const old = new Date()
+      old.setFullYear(old.getFullYear() - 80)
+      return vaccidex.some(x => x.dateOfBirth < old)
+    },
+  },
+  {
+    name: 'Beta Tester',
+    description: 'Catch a certificate with vaccination date before April 2021',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => vaccidex.some(x => x.vaccinationDate < (new Date(2021, 4, 1))),
+  },
+  {
+    name: 'Maeiyr',
+    description: 'Catch three different versions of Meir',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => new Set(vaccidex
+        .map(x => x.lastName.match(/m(a|e)(i|y)(a|e)?r$/ui))
+        .filter(x => x)
+        .map(x => (x as RegExpMatchArray)[0])
+      ).size >= 3,
+  },
+  {
+    name: 'Traveler',
+    description: 'Catch Vaccímons from three different countries',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => new Set(vaccidex.map(x => x.certificateSigner)).size >= 3,
+  },
+  {
+    name: 'Super Spreader',
+    description: 'Catch Vaccímons from five different countries',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => new Set(vaccidex.map(x => x.certificateSigner)).size >= 5,
+  },
+  {
+    name: 'Communism',
+    description: 'Catch a vaccine from Russia or China',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => !!vaccidex.find(x => x.vaccine === 'CVnCoV'
+      || x.vaccine === 'Sputnik V'
+      || x.vaccine === 'EpiVacCorona'
+      || x.vaccine === 'BBIBP-CorV Vaccine medicinal'
+      || x.vaccine === 'CoronaVac'
+    ),
+  },
+  {
+    name: 'Wait never mind',
+    description: 'Catch a Vaccímon with mixed vaccines',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.fullName === y.fullName && x.vaccine !== y.vaccine)),
   },
   {
     name: 'ZDF',
     description: 'Did you watch the ZDF Documentation?',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => !!vaccidex.find(x => x.fullName.split('').sort().join('') === ' -HKWacehilnrruz'),
+    condition: vaccidex => vaccidex.some(x => x.fullName.split('').sort().join('') === ' -HKWacehilnrruz'),
   },
   {
     name: 'Collector',
@@ -80,16 +141,6 @@ export const achievements: Achievement[] = [
     description: 'Catch 100 Vaccímon',
     difficulty: AchievementDiffuculty.Hard,
     condition: vaccidex => vaccidex.length >= 100,
-  },
-  {
-    name: 'Maeiyr',
-    description: 'Scan three different versions of Meir',
-    difficulty: AchievementDiffuculty.Hard,
-    condition: vaccidex => new Set(vaccidex
-        .map(x => x.lastName.match(/m(a|e)(i|y)(a|e)?r$/ui))
-        .filter(x => x)
-        .map(x => (x as RegExpMatchArray)[0])
-      ).size >= 3,
   },
 ]
 
