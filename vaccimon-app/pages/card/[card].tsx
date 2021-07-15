@@ -42,12 +42,9 @@ export default function Card() {
   const router = useRouter()
   const [vaccimon, setVaccimon] = useState<Vaccimon[]>()
   const index = useMemo(() => {
-    if (!router.query || !vaccimon) {
-      return 0
-    }
-    const id = Buffer.from(router.query['card'] as string, 'base64').toString('binary')
-    return vaccimon.findIndex(x => x.id === id) ?? 0
-  }, [router.query, vaccimon])
+    const id = router.query['card'] as string | undefined
+    return id ? +id : 0
+  }, [router.query])
 
   function getIcons(v: Vaccimon): IconDefinition[] {
     if(v.vaccine in icons)
@@ -64,12 +61,7 @@ export default function Card() {
   }
 
   function updateUrl(index: number): void {
-    if (!vaccimon) {
-      return
-    }
-
-    const id = vaccimon[index].id
-    router.replace(`/card/${Buffer.from(id, 'binary').toString('base64')}`, undefined, { shallow: true })
+    router.replace(`/card/${index}`, undefined, { shallow: true })
   }
 
   useEffect(() => {

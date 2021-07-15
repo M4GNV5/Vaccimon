@@ -35,8 +35,8 @@ export default function Vaccidex() {
     <AppContainer>
       <AppNavbar title="Vaccidex" />
       <Container className={styles.previews}>
-        {vaccimon && vaccimon.map(v =>
-          <Link key={v.id} href={`/card/${Buffer.from(v.id, 'binary').toString('base64')}`} passHref>
+        {vaccimon && vaccimon.map((v, i) =>
+          <Link key={v.id} href={`/card/${i}`} passHref>
             <a className={styles.preview}>
               <Image src={v.avatarUrl} width={64} height={64} alt="" />
               <div className={styles.name}>
