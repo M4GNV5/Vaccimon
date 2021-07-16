@@ -42,10 +42,22 @@ export const achievements: Achievement[] = [
     condition: vaccidex => vaccidex.some(x => x.vaccine === 'Comirnaty')
   },
   {
+    name: 'German Manufacturing',
+    description: 'Catch at least 5 Comirnaty Vaccímon',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.filter(x => x.vaccine === 'Comirnaty').length >= 5
+  },
+  {
     name: 'Modörna',
     description: 'Catch your first Spikevax Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
     condition: vaccidex => vaccidex.some(x => x.vaccine === 'Spikevax')
+  },
+  {
+    name: 'Operation Warp Speed',
+    description: 'Catch at least 5 Spikevax Vaccímon',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.filter(x => x.vaccine === 'Spikevax').length >= 5
   },
   {
     name: 'Old peoples Vaccine',
@@ -54,16 +66,52 @@ export const achievements: Achievement[] = [
     condition: vaccidex => vaccidex.some(x => x.vaccine === 'Vaxzevria')
   },
   {
+    name: 'Sonderimpfaktion',
+    description: 'Catch at least 5 Vaxzevria Vaccímon',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.filter(x => x.vaccine === 'Vaxzevria').length >= 5
+  },
+  {
     name: 'FREEDOM!',
     description: 'Catch your first Janssen Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
     condition: vaccidex => vaccidex.some(x => x.vaccine === 'COVID-19 Vaccine Janssen')
   },
   {
+    name: 'Every second counts',
+    description: 'Catch at least 5 Janssen Vaccímon',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.filter(x => x.vaccine === 'COVID-19 Vaccine Janssen').length >= 5
+  },
+  {
+    name: 'Exportschlager',
+    description: 'Scan at least 5 Comirnaty Vaccímon not from Germany',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.filter(x => x.vaccine === 'Comirnaty' && x.country !== 'DE').length >= 5
+  },
+  {
+    name: 'Diversity',
+    description: 'Catch Vaccímons with three different vaccines',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => new Set(vaccidex.map(x => x.vaccine)).size >= 3,
+  },
+  {
+    name: 'Shorthand',
+    description: 'Scan someone with a full name length of maximum 8 characters',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => vaccidex.some(x => x.fullName.length <= 8),
+  },
+  {
+    name: 'Accuracte Description',
+    description: 'Scan someone with a name containing at least four parts',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => vaccidex.some(x => x.fullName.replace('-', ' ').split(' ').length >= 4),
+  },
+  {
     name: 'We are Family',
     description: 'Catch three or more Vaccímon with the same family name',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => vaccidex.filter(y => x.lastName === y.lastName).length > 2)
+    condition: vaccidex => vaccidex.some(x => vaccidex.filter(y => x.lastName === y.lastName).length >= 3)
   },
   {
     name: 'This is Technology Test!',
@@ -85,7 +133,7 @@ export const achievements: Achievement[] = [
     name: 'Beta Tester',
     description: 'Catch a certificate with vaccination date before April 2021',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.vaccinationDate < (new Date(2021, 4, 1)))
+    condition: vaccidex => vaccidex.some(x => x.vaccinationDate < (new Date(2021, 3, 1)))
   },
   {
     name: 'Maeiyr',
