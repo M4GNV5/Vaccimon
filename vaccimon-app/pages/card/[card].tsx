@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { Button, Container, Nav, Navbar } from 'react-bootstrap'
+import { Button, Container } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   IconDefinition,
@@ -11,7 +11,7 @@ import {
   faVirus,
   faSyringe,
   faFlagUsa,
-  faTint,
+  faTint
 } from '@fortawesome/free-solid-svg-icons'
 import SwipableViews from 'react-swipeable-views'
 import VaccimonRepo from '../../lib/repository'
@@ -22,16 +22,16 @@ import AppNavbar from '../../components/AppNavbar'
 import AppTabbar from '../../components/AppTabbar'
 
 const icons: {[key: string]: IconDefinition[]} = {
-  "Comirnaty": [faDna, faCar],
-  "Spikevax": [faDna, faCrow],
-  "Vaxzevria": [faVirus, faTint],
-  "COVID-19 Vaccine Janssen": [faVirus, faFlagUsa],
+  Comirnaty: [faDna, faCar],
+  Spikevax: [faDna, faCrow],
+  Vaxzevria: [faVirus, faTint],
+  'COVID-19 Vaccine Janssen': [faVirus, faFlagUsa]
 }
 const classes: {[key: string]: string} = {
-  "Comirnaty": styles["card-comirnaty"],
-  "Spikevax": styles["card-spikevax"],
-  "Vaxzevria": styles["card-vaxzevria"],
-  "COVID-19 Vaccine Janssen": styles["card-janssen"],
+  Comirnaty: styles['card-comirnaty'],
+  Spikevax: styles['card-spikevax'],
+  Vaxzevria: styles['card-vaxzevria'],
+  'COVID-19 Vaccine Janssen': styles['card-janssen']
 }
 
 // https://dev.to/jorik/country-code-to-flag-emoji-a21
@@ -43,29 +43,23 @@ function getFlagEmoji (code: string): string {
   return String.fromCodePoint(...codePoints)
 }
 
-export default function Card() {
+export default function Card () {
   const router = useRouter()
   const [vaccimon, setVaccimon] = useState<Vaccimon[]>()
   const index = useMemo(() => {
-    const id = router.query['card'] as string | undefined
+    const id = router.query.card as string | undefined
     return id ? +id : 0
   }, [router.query])
 
-  function getIcons(v: Vaccimon): IconDefinition[] {
-    if(v.vaccine in icons)
-      return icons[v.vaccine]
-    else
-      return [faSyringe]
+  function getIcons (v: Vaccimon): IconDefinition[] {
+    if (v.vaccine in icons) { return icons[v.vaccine] } else { return [faSyringe] }
   }
 
-  function getCardClass(v: Vaccimon): string {
-    if(v.vaccine in classes)
-      return classes[v.vaccine]
-    else
-      return 'card-other'
+  function getCardClass (v: Vaccimon): string {
+    if (v.vaccine in classes) { return classes[v.vaccine] } else { return 'card-other' }
   }
 
-  function updateUrl(index: number): void {
+  function updateUrl (index: number): void {
     router.replace(`/card/${index}`, undefined, { shallow: true })
   }
 
@@ -76,7 +70,7 @@ export default function Card() {
         await repo.open()
         const certs = await repo.getAllCerts()
         const vaccimon = await Promise.all(certs.map(x => Vaccimon.parse(x.data)))
-        
+
         vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName))
         setVaccimon(vaccimon)
       } finally {

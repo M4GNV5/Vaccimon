@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
 
-import { Container, ListGroup, Nav } from 'react-bootstrap'
+import { Container, ListGroup } from 'react-bootstrap'
 
 import AppContainer from '../components/AppContainer'
 import AppNavbar from '../components/AppNavbar'
@@ -11,7 +11,7 @@ import { achievements, calculateAchievements } from './achievements'
 
 import styles from '../styles/index.module.css'
 
-export default function Home() {
+export default function Home () {
   const router = useRouter()
   const vaccimon = useVaccimon()
   const unlockedAchievements = useMemo(() => calculateAchievements(vaccimon), [vaccimon])

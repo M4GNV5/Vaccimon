@@ -3,16 +3,16 @@ import { IDBPDatabase, openDB, DBSchema } from 'idb'
 const DB_NAME = 'vaccimon'
 const CERT_STORE_NAME = 'certificates'
 
+export interface VaccimonCert {
+  id: string
+  data: string
+}
+
 interface VaccimonSchema extends DBSchema {
   [CERT_STORE_NAME]: {
     key: string
     value: VaccimonCert
   }
-}
-
-export interface VaccimonCert {
-  id: string
-  data: string
 }
 
 export default class VaccimonRepo {
@@ -59,5 +59,4 @@ export default class VaccimonRepo {
 
     await this.db.delete(CERT_STORE_NAME, vaccimon.id)
   }
-
 }

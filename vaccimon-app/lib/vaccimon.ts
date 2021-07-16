@@ -1,40 +1,41 @@
+/* eslint-disable import/no-duplicates */
 import { EuDgcCert, EuDgcVaccincation } from 'eudgc'
 import 'eudgc' // required to load window.EuDgc_parse
 
 // possible values of `mp` field
 // see https://ec.europa.eu/health/sites/default/files/ehealth/docs/digital-green-value-sets_en.pdf
 const vaccines: {[key: string]: string} = {
-  "EU/1/20/1528": "Comirnaty",
-  "EU/1/20/1507": "Spikevax",
-  "EU/1/21/1529": "Vaxzevria",
-  "EU/1/20/1525": "COVID-19 Vaccine Janssen",
-  "CVnCoV": "CVnCoV",
-  "NVX-CoV2373": "NVX-CoV2373",
-  "Sputnik-V": "Sputnik V",
-  "Convidecia": "Convidecia",
-  "EpiVacCorona": "EpiVacCorona",
-  "BBIBP-CorV": "BBIBP-CorV Vaccine medicinal",
-  "Inactivated-SARS-CoV-2-Vero-Cell": "Inactivated SARS-CoV-2 (Vero Cell)",
-  "CoronaVac": "CoronaVac",
-  "Covaxin": "Covaxin",
-  "Covishield": "Covishield",
+  'EU/1/20/1528': 'Comirnaty',
+  'EU/1/20/1507': 'Spikevax',
+  'EU/1/21/1529': 'Vaxzevria',
+  'EU/1/20/1525': 'COVID-19 Vaccine Janssen',
+  CVnCoV: 'CVnCoV',
+  'NVX-CoV2373': 'NVX-CoV2373',
+  'Sputnik-V': 'Sputnik V',
+  Convidecia: 'Convidecia',
+  EpiVacCorona: 'EpiVacCorona',
+  'BBIBP-CorV': 'BBIBP-CorV Vaccine medicinal',
+  'Inactivated-SARS-CoV-2-Vero-Cell': 'Inactivated SARS-CoV-2 (Vero Cell)',
+  CoronaVac: 'CoronaVac',
+  Covaxin: 'Covaxin',
+  Covishield: 'Covishield'
 }
 
-const eyes = ["eyes1","eyes10","eyes2","eyes3","eyes4","eyes5","eyes6","eyes7","eyes9"]
-const noses = ["nose2","nose3","nose4","nose5","nose6","nose7","nose8","nose9"]
-const mouths = ["mouth1","mouth10","mouth11","mouth3","mouth5","mouth6","mouth7","mouth9"]
+const eyes = ['eyes1', 'eyes10', 'eyes2', 'eyes3', 'eyes4', 'eyes5', 'eyes6', 'eyes7', 'eyes9']
+const noses = ['nose2', 'nose3', 'nose4', 'nose5', 'nose6', 'nose7', 'nose8', 'nose9']
+const mouths = ['mouth1', 'mouth10', 'mouth11', 'mouth3', 'mouth5', 'mouth6', 'mouth7', 'mouth9']
 const colors: {[key: string]: string} = {
-  "Comirnaty": "89F59B",
-  "Spikevax": "F5899F",
-  "Vaxzevria": "BAC6F5",
-  "COVID-19 Vaccine Janssen": "F5DC95",
+  Comirnaty: '89F59B',
+  Spikevax: 'F5899F',
+  Vaxzevria: 'BAC6F5',
+  'COVID-19 Vaccine Janssen': 'F5DC95'
 }
 
 /**
  * Fixes uppercase names
  * e.g. JOHN DOE -> John Doe
  */
-function fixCapsLock(str: string): string {
+function fixCapsLock (str: string): string {
   if (str === str.toUpperCase()) {
     return str.replace(/[^ -]+/g, x => x.substr(0, 1) + x.substr(1).toLowerCase())
   } else {
@@ -42,10 +43,10 @@ function fixCapsLock(str: string): string {
   }
 }
 
-function genRandoms(count: number, seed: number): number[] {
+function genRandoms (count: number, seed: number): number[] {
   const result = []
   let curr = seed
-  for(let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i++) {
     curr = (curr * 214013 + 2531011) % 32768
     result.push(curr)
   }
@@ -54,11 +55,10 @@ function genRandoms(count: number, seed: number): number[] {
 }
 
 export class Vaccimon {
-
   _cert: EuDgcCert
   _vaccinationNum: number
 
-  constructor(cert: EuDgcCert, vaccination: number = 0) {
+  constructor (cert: EuDgcCert, vaccination: number = 0) {
     this._cert = cert
     this._vaccinationNum = vaccination
   }
@@ -68,44 +68,44 @@ export class Vaccimon {
     return new Vaccimon(cert, vaccination)
   }
 
-  private get _vaccination(): EuDgcVaccincation {
+  private get _vaccination (): EuDgcVaccincation {
     return this._cert.v[this._vaccinationNum]
   }
 
-  get id(): string {
+  get id (): string {
     return this._vaccination.ci
   }
 
-  get firstName(): string {
+  get firstName (): string {
     return fixCapsLock(this._cert.nam.gn)
   }
 
-  get lastName(): string {
+  get lastName (): string {
     return fixCapsLock(this._cert.nam.fn)
   }
 
-  get fullName(): string {
+  get fullName (): string {
     return `${this.firstName} ${this.lastName}`
   }
 
-  get dateOfBirth(): Date {
+  get dateOfBirth (): Date {
     return new Date(this._cert.dob)
   }
 
-  get vaccine(): string {
+  get vaccine (): string {
     const key = this._vaccination.mp
     return vaccines[key] || key
   }
 
-  get vaccinationDate(): Date {
+  get vaccinationDate (): Date {
     return new Date(this._vaccination.dt)
   }
 
-  get country(): string {
+  get country (): string {
     return this._vaccination.co
   }
 
-  get avatarUrl(): string {
+  get avatarUrl (): string {
     const seed = this.id
       .split('')
       .map(x => x.charCodeAt(0))
@@ -121,11 +121,11 @@ export class Vaccimon {
     return `https://api.hello-avatar.com/adorables/face/${eye}/${nose}/${mouth}/${color}/256`
   }
 
-  get certificateSigner(): string {
+  get certificateSigner (): string {
     return this._vaccination.is
   }
 
-  get isFullyVaccinated(): boolean {
+  get isFullyVaccinated (): boolean {
     return this._vaccination.sd === this._vaccination.dn
   }
 }

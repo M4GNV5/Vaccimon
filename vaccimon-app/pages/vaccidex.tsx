@@ -7,7 +7,7 @@ import AppTabbar from '../components/AppTabbar'
 import styles from '../styles/vaccidex.module.css'
 import useVaccimon from '../lib/repository-hook'
 
-export default function Vaccidex() {
+export default function Vaccidex () {
   const vaccimon = useVaccimon()
 
   return (

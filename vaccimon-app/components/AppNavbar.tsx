@@ -1,6 +1,5 @@
-import React, { createContext } from 'react'
+import { createContext } from 'react'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { Container, Navbar } from 'react-bootstrap'
 import styles from '../styles/AppNavbar.module.css'
 
@@ -12,8 +11,6 @@ interface AppNavbarProps {
 }
 
 export default function AppNavbar ({ title, children }: AppNavbarProps) {
-  const router = useRouter()
-
   return (
     <>
       <Head>

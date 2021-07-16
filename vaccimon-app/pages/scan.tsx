@@ -7,24 +7,23 @@ import styles from '../styles/scan.module.css'
 import AppTabbar from '../components/AppTabbar'
 import AppContainer from '../components/AppContainer'
 
-export default function Scan() {
+export default function Scan () {
   const router = useRouter()
   const video = createRef<HTMLVideoElement>()
   const canvas = createRef<HTMLCanvasElement>()
   const [scanning, setScanning] = useState(true)
 
-  const scanImage = useCallback(async function() {
+  const scanImage = useCallback(async function () {
     try {
       const videoEl = video.current
       const canvasEl = canvas.current
-      if(!scanning || !videoEl || !canvasEl || videoEl.videoWidth === 0 || videoEl.videoHeight === 0)
-        return
+      if (!scanning || !videoEl || !canvasEl || videoEl.videoWidth === 0 || videoEl.videoHeight === 0) { return }
 
       canvasEl.width = videoEl.videoWidth
       canvasEl.height = videoEl.videoHeight
 
       const ctx = canvasEl.getContext('2d')
-      if(!ctx) {
+      if (!ctx) {
         return
       }
 
@@ -34,7 +33,7 @@ export default function Scan() {
       const results = await scanImageData(imgData)
       await Promise.all(results.map(async result => {
         try {
-          const data = result.decode().trim()  
+          const data = result.decode().trim()
           const cert = await Vaccimon.parse(data)
 
           const repo = new VaccimonRepo()
@@ -47,13 +46,12 @@ export default function Scan() {
           } finally {
             repo.close()
           }
-    
+
           setScanning(false)
           router.push('/vaccidex')
         } catch (e) {
           if (e instanceof TypeError) {
             console.error('Not a valid certificate:', e)
-            return
           } else {
             throw e
           }
@@ -67,11 +65,11 @@ export default function Scan() {
 
   useEffect(() => {
     let mediaStream: MediaStream | null = null
-    async function startVideo() {
+    async function startVideo () {
       if (!video.current || !canvas.current) {
         return
       }
-  
+
       const videoEl = video.current
 
       mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -93,7 +91,7 @@ export default function Scan() {
     const interval = setInterval(() => scanImage(), 500)
     return () => {
       clearInterval(interval)
-      if(mediaStream) {
+      if (mediaStream) {
         mediaStream.getTracks().map(x => x.stop())
       }
     }
