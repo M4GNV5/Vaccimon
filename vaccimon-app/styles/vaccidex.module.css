@@ -8,7 +8,7 @@
   text-align: center;
   padding: 5px;
   margin: 10px;
-  max-width: calc(33% - 20px);
+  width: calc(33% - 20px);
 }
 
 .preview img {
