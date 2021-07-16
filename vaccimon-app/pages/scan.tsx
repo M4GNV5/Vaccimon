@@ -1,10 +1,11 @@
 import { createRef, useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Container } from 'react-bootstrap'
 import { scanImageData } from 'zbar.wasm'
 import VaccimonRepo from '../lib/repository'
 import { Vaccimon } from '../lib/vaccimon'
 import styles from '../styles/scan.module.css'
+import AppTabbar from '../components/AppTabbar'
+import AppContainer from '../components/AppContainer'
 
 export default function Scan() {
   const router = useRouter()
@@ -99,12 +100,13 @@ export default function Scan() {
   }, [video, canvas, scanImage])
 
   return (
-    <Container>
+    <AppContainer>
       <video className={styles.scanVideo} ref={video} />
       <canvas className={styles.scanCanvas} ref={canvas} />
       <div className={styles.legend}>
         Point your camera at a certificate.
       </div>
-    </Container>
+      <AppTabbar />
+    </AppContainer>
   )
 }
