@@ -150,9 +150,7 @@ export function calculateAchievements(vaccidex: Vaccimon[]): Achievement[] {
 
 export default function Home() {
   const vaccimon = useVaccimon()
-  const unlockedAchievements = useMemo<Achievement[]>(() => {
-    return calculateAchievements(vaccimon)
-  }, [vaccimon])
+  const unlockedAchievements = useMemo(() => calculateAchievements(vaccimon), [vaccimon])
 
   function renderAchievement(achievement: Achievement, achieved: boolean) {
     return (
