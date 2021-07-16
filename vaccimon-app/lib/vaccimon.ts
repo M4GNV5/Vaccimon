@@ -24,10 +24,10 @@ const eyes = ["eyes1","eyes10","eyes2","eyes3","eyes4","eyes5","eyes6","eyes7","
 const noses = ["nose2","nose3","nose4","nose5","nose6","nose7","nose8","nose9"]
 const mouths = ["mouth1","mouth10","mouth11","mouth3","mouth5","mouth6","mouth7","mouth9"]
 const colors: {[key: string]: string} = {
-  "Comirnaty": "014c07",
-  "Spikevax": "9e090b",
-  "Vaxzevria": "5503bf",
-  "COVID-19 Vaccine Janssen": "bfaf03",
+  "Comirnaty": "00db12",
+  "Spikevax": "ff6365",
+  "Vaxzevria": "b781fd",
+  "COVID-19 Vaccine Janssen": "fbe704",
 }
 
 export class Vaccimon {
