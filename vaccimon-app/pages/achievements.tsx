@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import { Container, ListGroup } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
-import VaccimonRepo from '../lib/repository'
-import { Vaccimon } from '../lib/vaccimon'
 import AppContainer from '../components/AppContainer'
 import AppNavbar from '../components/AppNavbar'
 import AppTabbar from '../components/AppTabbar'
+import { Vaccimon } from '../lib/vaccimon'
+import useVaccimon from '../lib/repository-hook'
 
 export enum AchievementDiffuculty {
   Easy,
@@ -148,30 +148,11 @@ export function calculateAchievements(vaccidex: Vaccimon[]): Achievement[] {
   return achievements.filter(x => x.condition(vaccidex))
 }
 
-export async function getAchievements(): Promise<Achievement[]> {
-  const repo = new VaccimonRepo()
-  try {
-    await repo.open()
-    const certs = await repo.getAllCerts()
-    const vaccidex = await Promise.all(certs.map(x => Vaccimon.parse(x.data)))
-    return calculateAchievements(vaccidex)
-  } finally {
-    await repo.close()
-  }
-
-}
-
 export default function Home() {
-  const [unlockedAchievements, setUnlockedAchievements] = useState<Achievement[]>([])
-
-  useEffect(() => {
-    async function load() {
-      const result = await getAchievements()
-      console.log(result)
-      setUnlockedAchievements(result)
-    }
-    load()
-  }, [])
+  const vaccimon = useVaccimon()
+  const unlockedAchievements = useMemo<Achievement[]>(() => {
+    return calculateAchievements(vaccimon)
+  }, [vaccimon])
 
   function renderAchievement(achievement: Achievement, achieved: boolean) {
     return (

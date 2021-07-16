@@ -1,35 +1,14 @@
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Badge, Container, Nav, Navbar } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQrcode } from '@fortawesome/free-solid-svg-icons'
+import { Container } from 'react-bootstrap'
 import AppContainer from '../components/AppContainer'
 import AppNavbar from '../components/AppNavbar'
 import AppTabbar from '../components/AppTabbar'
-import VaccimonRepo from '../lib/repository'
-import { Vaccimon } from '../lib/vaccimon'
 import styles from '../styles/vaccidex.module.css'
+import useVaccimon from '../lib/repository-hook'
 
 export default function Vaccidex() {
-  const [vaccimon, setVaccimon] = useState<Vaccimon[]>()
-
-  useEffect(() => {
-    async function load () {
-      const repo = new VaccimonRepo()
-      try {
-        await repo.open()
-        const certs = await repo.getAllCerts()
-        const vaccimon = await Promise.all(certs.map(x => Vaccimon.parse(x.data)))
-        
-        vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName))
-        setVaccimon(vaccimon)
-      } finally {
-        await repo.close()
-      }
-    }
-    load()
-  }, [])
+  const vaccimon = useVaccimon()
 
   return (
     <AppContainer>
