@@ -1,5 +1,23 @@
+.cardGroup {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: calc(50% - 10px);
+  margin: 5px;
+  text-align: center;
+}
+
+.cardText {
+  font-size: 24px;
+  color: var(--bs-primary);
+}
+
 .disclaimer {
 	position: absolute;
 	display: block;
-	bottom: 60px;
+  left: 0;
+	bottom: calc(56px + 10px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
 }

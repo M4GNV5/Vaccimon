@@ -23,5 +23,6 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "@next/next/link-passhref": "off"
     }
 }
