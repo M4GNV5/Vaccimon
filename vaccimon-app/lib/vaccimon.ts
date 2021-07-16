@@ -24,10 +24,10 @@ const eyes = ["eyes1","eyes10","eyes2","eyes3","eyes4","eyes5","eyes6","eyes7","
 const noses = ["nose2","nose3","nose4","nose5","nose6","nose7","nose8","nose9"]
 const mouths = ["mouth1","mouth10","mouth11","mouth3","mouth5","mouth6","mouth7","mouth9"]
 const colors: {[key: string]: string} = {
-  "Comirnaty": "00db12",
-  "Spikevax": "ff6365",
-  "Vaxzevria": "b781fd",
-  "COVID-19 Vaccine Janssen": "fbe704",
+  "Comirnaty": "89F59B",
+  "Spikevax": "F5899F",
+  "Vaxzevria": "BAC6F5",
+  "COVID-19 Vaccine Janssen": "F5DC95",
 }
 
 export class Vaccimon {
@@ -83,15 +83,15 @@ export class Vaccimon {
   }
 
   get avatarUrl(): string {
-    const seed = this.id.substr(this.id.length - 4)
-    const eye = seed.charCodeAt(0) % eyes.length
-    const nose = seed.charCodeAt(1) % noses.length
-    const mouth = seed.charCodeAt(2) % mouths.length
+    const seed = this.id.split('').map(x => x.charCodeAt(0)).reduce((a, b) => a + b)
+    const eye = seed % eyes.length
+    const nose = seed % noses.length
+    const mouth = seed % mouths.length
     const color = colors[this.vaccine] || 'ffffff'
 
     // TODO: use a self hosted image service
     // TODO: hash the id?
-    return `https://api.hello-avatar.com/adorables/face/${eyes[eye]}/${noses[nose]}/${mouths[mouth]}/${color}/128`
+    return `https://api.hello-avatar.com/adorables/face/${eyes[eye]}/${noses[nose]}/${mouths[mouth]}/${color}/256`
   }
 
   get certificateSigner(): string {

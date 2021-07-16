@@ -99,13 +99,15 @@ export default function Card() {
             >
               {vaccimon.map(v =>
                 <div key={v.id} className={`${styles.card} ${getCardClass(v)}`}>
-                  <span className={styles.name}>
-                    {v.fullName}
-                  </span>
-                  <span className={styles.vaccinationKind}>
-                    {getFlagEmoji(v.country)}
-                    {getIcons(v).map((icon, i) => <FontAwesomeIcon key={i} icon={icon} size="xs" fixedWidth />)}
-                  </span>
+                  <div className={styles.headline}>
+                    <div className={styles.vaccinationKind}>
+                      {getIcons(v).map((icon, i) => <FontAwesomeIcon key={i} icon={icon} size="xs" fixedWidth />)}
+                      {getFlagEmoji(v.country)}
+                    </div>
+                    <div className={styles.name}>
+                      {v.fullName}
+                    </div>
+                  </div>
                   <div className={styles.imageContainer}>
                     <Image src={v.avatarUrl} width={245} height={245} alt="" />
                   </div>
@@ -119,7 +121,7 @@ export default function Card() {
                       <span className={styles.propValue}>{v.isFullyVaccinated ? '2' : '1'}</span>
                     </div>
                     <div>
-                      <span className={styles.propName}>Born</span>
+                      <span className={styles.propName}>Birthday</span>
                       <span className={styles.propValue}>{v.dateOfBirth.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                     </div>
                     <div>

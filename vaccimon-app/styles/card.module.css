@@ -12,16 +12,19 @@
 .imageContainer {
   display: flex;
   justify-content: center;
-  margin: 5px;
-}
-
-.imageContainer img {
+  margin: 10px;
   border-radius: 5px;
+  border: 4px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .name {
   font-size: 1.4rem;
   font-weight: 600;
+  padding-right: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vaccinationKind {
@@ -30,19 +33,19 @@
 }
 
 .card-comirnaty {
-  background: linear-gradient(45deg, rgba(1, 76, 7, 0.4), rgba(1, 76, 7, 0.3));
+  background: #89F59B;
 }
 .card-spikevax {
-  background: linear-gradient(45deg, rgba(158, 9, 11, 0.4), rgba(158, 9, 11, 0.3));
+  background: #F5899F;
 }
 .card-vaxzevria {
-  background: linear-gradient(45deg, rgba(85, 3, 191, 0.4), rgba(85, 3, 191, 0.3));
+  background: #BAC6F5;
 }
 .card-janssen {
-  background: linear-gradient(45deg, rgba(191, 175, 3, 0.4), rgba(191, 175, 3, 0.3));
+  background: #F5DC95;
 }
 .card-other {
-  background: linear-gradient(45deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
+  background: #EEEEEE;
 }
 
 .properties {

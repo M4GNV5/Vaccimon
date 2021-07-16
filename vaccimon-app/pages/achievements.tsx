@@ -176,12 +176,12 @@ export default function Home() {
   function renderAchievement(achievement: Achievement, achieved: boolean) {
     return (
       <ListGroup.Item key={achievement.name} disabled={!achieved}>
-        <div className="float-start">
-          <b>{achievement.name}</b><br />
-          {achievement.description}
-        </div>
         <div className="float-end">
           {achieved && <FontAwesomeIcon icon={faCheck} />}
+        </div>
+        <div>
+          <b>{achievement.name}</b><br />
+          {achievement.description}
         </div>
       </ListGroup.Item>
     )
