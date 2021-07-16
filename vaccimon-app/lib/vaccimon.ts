@@ -42,6 +42,17 @@ function fixCapsLock(str: string): string {
   }
 }
 
+function genRandoms(count: number, seed: number): number[] {
+  const result = []
+  let curr = seed
+  for(let i = 0; i < count; i++) {
+    curr = (curr * 214013 + 2531011) % 32768
+    result.push(curr)
+  }
+
+  return result
+}
+
 export class Vaccimon {
 
   _cert: EuDgcCert
@@ -95,15 +106,19 @@ export class Vaccimon {
   }
 
   get avatarUrl(): string {
-    const seed = this.id.split('').map(x => x.charCodeAt(0)).reduce((a, b) => a + b)
-    const eye = seed % eyes.length
-    const nose = seed % noses.length
-    const mouth = seed % mouths.length
+    const seed = this.id
+      .split('')
+      .map(x => x.charCodeAt(0))
+      .reduce((a, b) => a + b)
+
+    const [eyeR, noseR, mouthR] = genRandoms(3, seed)
+    const eye = eyes[eyeR % eyes.length]
+    const nose = noses[noseR % noses.length]
+    const mouth = mouths[mouthR % mouths.length]
     const color = colors[this.vaccine] || 'ffffff'
 
     // TODO: use a self hosted image service
-    // TODO: hash the id?
-    return `https://api.hello-avatar.com/adorables/face/${eyes[eye]}/${noses[nose]}/${mouths[mouth]}/${color}/256`
+    return `https://api.hello-avatar.com/adorables/face/${eye}/${nose}/${mouth}/${color}/256`
   }
 
   get certificateSigner(): string {
