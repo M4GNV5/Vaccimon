@@ -1,10 +1,6 @@
 .navbar {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
   /* prevent iOS home bar from overlapping tab bar */
-  bottom: env(safe-area-inset-bottom, 0px);
+  padding: 0 0 env(safe-area-inset-bottom, 0px) 0;
   background: var(--tabbar-background, white);
   border-top: 1px solid var(--tabbar-border, #eeeeee);
   box-shadow: 0px 0px 3px var(--tabbar-shadow, #00000020);
@@ -20,7 +16,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
   font-size: 8pt;
   color: var(--tabbar-tab, #444444) !important;
 }

@@ -16,7 +16,7 @@ export default function AppTabbar () {
     <>
       <div className={styles.spacer} />
 
-      <Navbar className={`${styles.navbar}`}>
+      <Navbar className={`${styles.navbar}`} fixed="bottom">
         <Nav className={`${styles.nav} justify-content-around`}>
           <Nav.Item>
             <Nav.Link onClick={() => router.replace('/')} className={`${styles.tab} ${router.pathname === '/' && styles.tabActive}`}>
