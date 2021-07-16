@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
-import Head from 'next/head'
 import Image from 'next/image'
 import { Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -122,11 +121,15 @@ export default function Card() {
                     </div>
                     <div>
                       <span className={styles.propName}>Birthday</span>
-                      <span className={styles.propValue}>{v.dateOfBirth.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                      <span className={styles.propValue}>
+                        {v.dateOfBirth.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
                     </div>
                     <div>
                       <span className={styles.propName}>Vaccination day</span>
-                      <span className={styles.propValue}>{v.vaccinationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                      <span className={styles.propValue}>
+                        {v.vaccinationDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
                     </div>
                   </div>
                   <Button className={styles.showQRButton} variant="secondary">Show certificate</Button>
