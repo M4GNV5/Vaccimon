@@ -103,7 +103,7 @@ export default function Card() {
                     {v.fullName}
                   </span>
                   <span className={styles.vaccinationKind}>
-                    {getFlagEmoji('DE')}
+                    {getFlagEmoji(v.country)}
                     {getIcons(v).map((icon, i) => <FontAwesomeIcon key={i} icon={icon} size="xs" fixedWidth />)}
                   </span>
                   <div className={styles.imageContainer}>
