@@ -101,6 +101,19 @@ export class Vaccimon {
     return new Date(this._vaccination.dt)
   }
 
+  get level (): number {
+    const immune = new Date()
+    immune.setDate(immune.getDate() - 14)
+
+    if (!this.isFullyVaccinated) {
+      return 1
+    } else if (this.vaccinationDate > immune) {
+      return 2
+    } else {
+      return 3
+    }
+  }
+
   get country (): string {
     return this._vaccination.co
   }

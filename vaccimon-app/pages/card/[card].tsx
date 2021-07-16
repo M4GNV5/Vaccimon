@@ -111,7 +111,7 @@ export default function Card () {
                     </div>
                     <div>
                       <span className={styles.propName}>Level</span>
-                      <span className={styles.propValue}>{v.isFullyVaccinated ? '2' : '1'}</span>
+                      <span className={styles.propValue}>{v.level}</span>
                     </div>
                     <div>
                       <span className={styles.propName}>Birthday</span>
