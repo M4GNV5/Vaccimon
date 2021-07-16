@@ -30,6 +30,18 @@ const colors: {[key: string]: string} = {
   "COVID-19 Vaccine Janssen": "F5DC95",
 }
 
+/**
+ * Fixes uppercase names
+ * e.g. JOHN DOE -> John Doe
+ */
+function fixCapsLock(str: string): string {
+  if (str === str.toUpperCase()) {
+    return str.replace(/[^ -]+/g, x => x.substr(0, 1) + x.substr(1).toLowerCase())
+  } else {
+    return str
+  }
+}
+
 export class Vaccimon {
 
   _cert: EuDgcCert
@@ -54,11 +66,11 @@ export class Vaccimon {
   }
 
   get firstName(): string {
-    return this._cert.nam.gn
+    return fixCapsLock(this._cert.nam.gn)
   }
 
   get lastName(): string {
-    return this._cert.nam.fn
+    return fixCapsLock(this._cert.nam.fn)
   }
 
   get fullName(): string {
