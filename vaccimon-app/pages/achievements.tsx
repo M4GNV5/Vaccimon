@@ -143,6 +143,16 @@ export const achievements: Achievement[] = [
     description: 'Catch 100 Vaccímon',
     difficulty: AchievementDiffuculty.Hard,
     condition: vaccidex => vaccidex.length >= 100
+  },
+  {
+    name: 'Gotta go fast',
+    description: 'Catch two vaccinations with the minimal interval',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.fullName === y.fullName && x.vaccine === y.vaccine && (
+      (x.fullName === 'Comirnaty' && Math.abs(x.vaccinationDate.getTime() - y.vaccinationDate.getTime()) <= 21 * 24 * 60 * 60 * 1000) ||
+      (x.fullName === 'Spikevax' && Math.abs(x.vaccinationDate.getTime() - y.vaccinationDate.getTime()) <= 28 * 24 * 60 * 60 * 1000) ||
+      (x.fullName === 'Vaxzevria' && Math.abs(x.vaccinationDate.getTime() - y.vaccinationDate.getTime()) <= 63 * 24 * 60 * 60 * 1000)
+    )))
   }
 ]
 
