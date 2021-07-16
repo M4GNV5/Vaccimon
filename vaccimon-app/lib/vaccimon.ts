@@ -78,6 +78,10 @@ export class Vaccimon {
     return new Date(this._vaccination.dt)
   }
 
+  get country(): string {
+    return this._vaccination.co
+  }
+
   get avatarUrl(): string {
     const seed = this.id.substr(this.id.length - 4)
     const eye = seed.charCodeAt(0) % eyes.length

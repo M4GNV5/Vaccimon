@@ -35,6 +35,15 @@ const classes: {[key: string]: string} = {
   "COVID-19 Vaccine Janssen": styles["card-janssen"],
 }
 
+// https://dev.to/jorik/country-code-to-flag-emoji-a21
+function getFlagEmoji (code: string): string {
+  const codePoints = code
+    .toUpperCase()
+    .split('')
+    .map(char => char.charCodeAt(0) + 127397)
+  return String.fromCodePoint(...codePoints)
+}
+
 export default function Card() {
   const router = useRouter()
   const [vaccimon, setVaccimon] = useState<Vaccimon[]>()
@@ -94,6 +103,7 @@ export default function Card() {
                     {v.fullName}
                   </span>
                   <span className={styles.vaccinationKind}>
+                    {getFlagEmoji('DE')}
                     {getIcons(v).map((icon, i) => <FontAwesomeIcon key={i} icon={icon} size="xs" fixedWidth />)}
                   </span>
                   <div className={styles.imageContainer}>
@@ -109,7 +119,7 @@ export default function Card() {
                       <span className={styles.propValue}>{v.isFullyVaccinated ? '2' : '1'}</span>
                     </div>
                     <div>
-                      <span className={styles.propName}>Birthday</span>
+                      <span className={styles.propName}>Born</span>
                       <span className={styles.propValue}>{v.dateOfBirth.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                     </div>
                     <div>
