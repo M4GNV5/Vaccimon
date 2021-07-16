@@ -30,19 +30,19 @@
 }
 
 .card-comirnaty {
-  background: linear-gradient(45deg, rgba(1, 76, 7, 0.2), rgba(1, 76, 7, 0.1));
+  background: linear-gradient(45deg, rgba(1, 76, 7, 0.4), rgba(1, 76, 7, 0.3));
 }
 .card-spikevax {
-  background: linear-gradient(45deg, rgba(158, 9, 11, 0.2), rgba(158, 9, 11, 0.1));
+  background: linear-gradient(45deg, rgba(158, 9, 11, 0.4), rgba(158, 9, 11, 0.3));
 }
 .card-vaxzevria {
-  background: linear-gradient(45deg, rgba(85, 3, 191, 0.2), rgba(85, 3, 191, 0.1));
+  background: linear-gradient(45deg, rgba(85, 3, 191, 0.4), rgba(85, 3, 191, 0.3));
 }
 .card-janssen {
-  background: linear-gradient(45deg, rgba(191, 175, 3, 0.2), rgba(191, 175, 3, 0.1));
+  background: linear-gradient(45deg, rgba(191, 175, 3, 0.4), rgba(191, 175, 3, 0.3));
 }
 .card-other {
-  background: linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
 }
 
 .properties {

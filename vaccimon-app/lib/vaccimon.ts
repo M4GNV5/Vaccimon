@@ -20,6 +20,16 @@ const vaccines: {[key: string]: string} = {
   "Covishield": "Covishield",
 }
 
+const eyes = ["eyes1","eyes10","eyes2","eyes3","eyes4","eyes5","eyes6","eyes7","eyes9"]
+const noses = ["nose2","nose3","nose4","nose5","nose6","nose7","nose8","nose9"]
+const mouths = ["mouth1","mouth10","mouth11","mouth3","mouth5","mouth6","mouth7","mouth9"]
+const colors: {[key: string]: string} = {
+  "Comirnaty": "014c07",
+  "Spikevax": "9e090b",
+  "Vaxzevria": "5503bf",
+  "COVID-19 Vaccine Janssen": "bfaf03",
+}
+
 export class Vaccimon {
 
   _cert: EuDgcCert
@@ -69,10 +79,15 @@ export class Vaccimon {
   }
 
   get avatarUrl(): string {
+    const seed = this.id.substr(this.id.length - 4)
+    const eye = seed.charCodeAt(0) % eyes.length
+    const nose = seed.charCodeAt(1) % noses.length
+    const mouth = seed.charCodeAt(2) % mouths.length
+    const color = colors[this.vaccine] || 'ffffff'
+
     // TODO: use a self hosted image service
     // TODO: hash the id?
-    const seed = this.id.substr(this.id.length - 4)
-    return `https://api.hello-avatar.com/adorables/${seed}`
+    return `https://api.hello-avatar.com/adorables/face/${eyes[eye]}/${noses[nose]}/${mouths[mouth]}/${color}/128`
   }
 
   get certificateSigner(): string {
