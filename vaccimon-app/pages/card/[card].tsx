@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { Button, Container } from 'react-bootstrap'
+import { Button, Container, Modal } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   IconDefinition,
@@ -14,12 +14,13 @@ import {
   faTint
 } from '@fortawesome/free-solid-svg-icons'
 import SwipableViews from 'react-swipeable-views'
-import VaccimonRepo from '../../lib/repository'
+import VaccimonRepo, { VaccimonCert } from '../../lib/repository'
 import styles from '../../styles/card.module.css'
 import { Vaccimon } from '../../lib/vaccimon'
 import AppContainer from '../../components/AppContainer'
 import AppNavbar from '../../components/AppNavbar'
 import AppTabbar from '../../components/AppTabbar'
+import QRCodeCanvas from '../../components/QRCodeCanvas'
 
 const icons: {[key: string]: IconDefinition[]} = {
   Comirnaty: [faDna, faCar],
@@ -45,7 +46,9 @@ function getFlagEmoji (code: string): string {
 
 export default function Card () {
   const router = useRouter()
+  const [certs, setCerts] = useState<VaccimonCert[]>()
   const [vaccimon, setVaccimon] = useState<Vaccimon[]>()
+  const [showCert, setShowCert] = useState(false)
   const index = useMemo(() => {
     const id = router.query.card as string | undefined
     return id ? +id : 0
@@ -70,8 +73,9 @@ export default function Card () {
         await repo.open()
         const certs = await repo.getAllCerts()
         const vaccimon = await Promise.all(certs.map(x => Vaccimon.parse(x.data)))
-
         vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName))
+
+        setCerts(certs)
         setVaccimon(vaccimon)
       } finally {
         await repo.close()
@@ -84,6 +88,15 @@ export default function Card () {
     <AppContainer>
         <AppNavbar title="Vaccidex" />
         <Container>
+          <Modal show={showCert} onHide={() => setShowCert(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Certificate</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {certs && <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={certs[index].data} />}
+            </Modal.Body>
+          </Modal>
+
           {vaccimon &&
             <SwipableViews
               className={styles.previews}
@@ -126,7 +139,7 @@ export default function Card () {
                       </span>
                     </div>
                   </div>
-                  <Button className={styles.showQRButton} variant="secondary">Show certificate</Button>
+                  <Button className={styles.showQRButton} variant="secondary" onClick={() => setShowCert(true)}>Show certificate</Button>
                 </div>
               )}
             </SwipableViews>

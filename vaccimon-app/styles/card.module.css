@@ -67,3 +67,7 @@
   left: 50%;
   transform: translateX(-50%);
 }
+
+.qrCode {
+  max-width: 100%;
+}
