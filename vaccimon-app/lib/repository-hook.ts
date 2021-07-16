@@ -15,6 +15,9 @@ export default function useVaccimon (): Vaccimon[] {
 
         vaccimon.sort((a, b) => a.fullName.localeCompare(b.fullName))
         setVaccimon(vaccimon)
+      } catch (e) {
+        console.error(e)
+        alert(e.message)
       } finally {
         await repo.close()
       }

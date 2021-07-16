@@ -32,7 +32,7 @@ export default function Home () {
               </Card.Body>
             </Card>
           </Link>
-          <Link href="/vaccidex">
+          <Link href="/achievements">
             <Card className={styles.card}>
               <Card.Body>
                 <Card.Title>
