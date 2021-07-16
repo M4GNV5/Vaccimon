@@ -93,19 +93,19 @@ export const achievements: Achievement[] = [
     name: 'Diversity',
     description: 'Catch Vaccímons with three different vaccines',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => new Set(vaccidex.map(x => x.vaccine)).size >= 3,
+    condition: vaccidex => new Set(vaccidex.map(x => x.vaccine)).size >= 3
   },
   {
     name: 'Shorthand',
     description: 'Scan someone with a full name length of maximum 8 characters',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.fullName.length <= 8),
+    condition: vaccidex => vaccidex.some(x => x.fullName.length <= 8)
   },
   {
     name: 'Accuracte Description',
     description: 'Scan someone with a name containing at least four parts',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.fullName.replace('-', ' ').split(' ').length >= 4),
+    condition: vaccidex => vaccidex.some(x => x.fullName.replace('-', ' ').split(' ').length >= 4)
   },
   {
     name: 'We are Family',
