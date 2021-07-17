@@ -23,6 +23,7 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "@next/next/link-passhref": "off"
+        "@next/next/link-passhref": "off",
+        "comma-dangle": "off"
     }
 }

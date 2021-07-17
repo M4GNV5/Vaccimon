@@ -1,7 +1,16 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 
-import { Container, ListGroup } from 'react-bootstrap'
+import { Button, Container, ListGroup } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faFistRaised,
+  faVirus,
+  faBed,
+  faSkullCrossbones,
+  faBullseye,
+} from '@fortawesome/free-solid-svg-icons'
 
 import AppContainer from '../components/AppContainer'
 import AppNavbar from '../components/AppNavbar'
@@ -12,6 +21,80 @@ import { Vaccimon } from '../lib/vaccimon'
 
 import styles from '../styles/fight.module.css'
 
+enum Effect {
+  Poison,
+  Sleeping,
+}
+type Ability = {
+  name: string,
+  failureRate: number,
+  minDamage: number,
+  maxDamage: number,
+  effects: Effect[]
+}
+
+enum GameActionKind {
+  End,
+  Attack,
+  Wait,
+  Swap,
+}
+type RemoteVaccimon = {
+  avatarUrl: string,
+  name: string,
+  health: number,
+}
+type GameAction = {
+  kind: GameActionKind,
+  isLocal: boolean,
+
+  abilityUse?: {
+    ability: Ability,
+    damage: number,
+    effects: Effect[],
+  },
+  newVaccimon?: RemoteVaccimon,
+}
+
+const baseAbilities: {[key: string]: Ability} = {
+  Comirnaty: {
+    name: 'Lipid Splash',
+    failureRate: 0.1,
+    minDamage: 10,
+    maxDamage: 30,
+    effects: []
+  },
+  Spikevax: {
+    name: 'Spikes',
+    failureRate: 0.1,
+    minDamage: 10,
+    maxDamage: 30,
+    effects: [],
+  },
+  Vaxzevria: {
+    name: 'Side Effects',
+    failureRate: 0.4,
+    minDamage: 0,
+    maxDamage: 15,
+    effects: [Effect.Sleeping],
+  },
+  'COVID-19 Vaccine Janssen': {
+    name: 'Adenovirus',
+    failureRate: 0.3,
+    minDamage: 0,
+    maxDamage: 0,
+    effects: [Effect.Poison],
+  },
+}
+
+const fallbackBaseAbility: Ability = {
+  name: 'EU Approval',
+  failureRate: 0.5,
+  minDamage: 25,
+  maxDamage: 40,
+  effects: [],
+}
+
 export default function Fight () {
   const router = useRouter()
   const vaccimon = useVaccimon()
@@ -19,8 +102,16 @@ export default function Fight () {
   const [cryptoIv, setCryptoIv] = useState<Uint8Array | null>(null)
   const [keyStr, setKeyStr] = useState<string>()
 
+  const [hasStarted, setHasStarted] = useState(false)
+  const [isMyTurn, setIsMyTurn] = useState(false)
+  const [myHealth, setMyHealth] = useState<number>(100)
+  const [myVaccimon, setMyVaccimon] = useState<Vaccimon | null>(null)
+  const [opponentVaccimon, setOpponentVaccimon] = useState<RemoteVaccimon | null>(null)
+  const [gameLog, setGameLog] = useState<GameAction[]>([])
+  const [logPosition, setLogPosition] = useState<number>(0)
+
   // XXX use key/iv to shut up eslint
-  console.log(cryptoKey, cryptoIv)
+  console.log(cryptoKey, cryptoIv, setMyVaccimon)
 
   const formatNum = (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })).format
 
@@ -33,6 +124,9 @@ export default function Fight () {
       const key = await window.crypto.subtle.importKey('raw', rawKey, 'AES-GCM', true, ['encrypt', 'decrypt'])
       setCryptoKey(key)
       setCryptoIv(iv)
+
+      setHasStarted(true)
+      setIsMyTurn(true)
     }
     async function generateKeys () {
       const iv = window.crypto.getRandomValues(new Uint8Array(12))
@@ -102,6 +196,31 @@ export default function Fight () {
       .reduce((a, b) => a + b, 0)
   }
 
+  function getAbilities (v: Vaccimon): Ability[] {
+    const result: Ability[] = []
+
+    if (v.vaccine in baseAbilities) {
+      result.push(baseAbilities[v.vaccine])
+    } else {
+      result.push(fallbackBaseAbility)
+    }
+
+    // TODO age based abilities?
+    // TODO family based abilities?
+
+    return result
+  }
+
+  function addAndTransmitAction (action: GameAction) {
+    const dup = [...gameLog]
+    dup.push(action)
+    setGameLog(dup)
+
+    setIsMyTurn(false)
+
+    // TODO: transmit
+  }
+
   const topList = useMemo(() => {
     const dup = vaccimon.slice(0)
     dup.sort((a, b) => calculateStrength(b) - calculateStrength(a))
@@ -166,5 +285,194 @@ export default function Fight () {
     )
   }
 
-  return renderLobby()
+  function renderGame () {
+    return (
+      <>
+        <div className={styles.opponentVaccimon}>
+          {opponentVaccimon && <Image src={opponentVaccimon.avatarUrl} width={245} height={245} alt="" />}
+          <span className={styles.vaccimonName}>
+            {opponentVaccimon ? opponentVaccimon.name : 'No Vaccimon'}
+          </span>
+        </div>
+        <div className={styles.vsText}>
+          VS
+        </div>
+        <div className={styles.myVaccimon}>
+          {myVaccimon && <Image src={myVaccimon.avatarUrl} width={245} height={245} alt="" />}
+          <span className={styles.vaccimonName}>
+            {myVaccimon ? myVaccimon.fullName : 'No Vaccimon'}
+          </span>
+        </div>
+      </>
+    )
+  }
+
+  function renderMyTurn () {
+    function performAbility (ability: Ability) {
+      const { minDamage, maxDamage, effects } = ability
+      const damage = minDamage + Math.round(Math.random() * (maxDamage - minDamage))
+
+      addAndTransmitAction({
+        kind: GameActionKind.Attack,
+        isLocal: true,
+
+        abilityUse: {
+          ability,
+          damage,
+          effects,
+        }
+      })
+    }
+    function skipTurn () {
+      addAndTransmitAction({
+        kind: GameActionKind.Wait,
+        isLocal: true,
+      })
+    }
+    function exitMatch () {
+      addAndTransmitAction({
+        kind: GameActionKind.End,
+        isLocal: true,
+      })
+      router.replace('/')
+    }
+
+    return (
+      <AppContainer>
+        <AppNavbar title="Fight" />
+
+        <Container>
+          {renderGame()}
+
+          <h5 className={styles.heading}>Your Turn</h5>
+          <div className="d-grid gap-2">
+            {myVaccimon && getAbilities(myVaccimon).map((ability, i) =>
+              <Button size="lg" key={innerWidth} variant="outline-danger" disabled={!opponentVaccimon} onClick={() => performAbility(ability)}>
+                <span className={styles.abilityKind}>Attack:{' '}</span>
+                <span className={styles.abilityName}>{ability.name}</span>
+                <span className={styles.abilityEffects}>
+                  <FontAwesomeIcon icon={faBullseye} fixedWidth />
+                  {Math.round(100 * (1 - ability.failureRate))}%
+                  {ability.maxDamage > 0 && <>
+                    <FontAwesomeIcon icon={faFistRaised} fixedWidth />
+                    {ability.minDamage} - {ability.maxDamage}
+                  </>}
+                  {ability.effects.map((effect, j) =>
+                    <span key={j}>
+                      <FontAwesomeIcon icon={effect === Effect.Poison ? faSkullCrossbones : faBed} fixedWidth />
+                    </span>
+                  )}
+                </span>
+              </Button>
+            )}
+            <Button size="lg" variant="outline-success" onClick={() => skipTurn()}>
+              Skip Turn
+            </Button>
+            <Button size="lg" variant="outline-primary">
+              Swap Vaccímon
+            </Button>
+            <Button size="lg" variant="outline-secondary" onClick={() => exitMatch()}>
+              Flee
+            </Button>
+          </div>
+        </Container>
+      </AppContainer>
+    )
+  }
+
+  function renderMessageQueue () {
+    const action = gameLog[Math.min(gameLog.length - 1, logPosition)]
+    let inner = null
+
+    if (!action) {
+      inner = (
+        <p>
+          Waiting for first move...
+        </p>
+      )
+    }
+    else if (action.kind === GameActionKind.Attack && action.abilityUse && opponentVaccimon && myVaccimon) {
+      const use = action.abilityUse
+      inner = (
+        <p>
+          {action.isLocal ? 'Your ' : 'Your opponents '}
+          <strong>{opponentVaccimon.name}</strong> uses <strong>{use.ability.name}</strong>
+          {(use.damage !== 0 || use.effects.length === 0) &&
+            <>
+              {' '}dealing <strong>{use.damage}</strong> damage
+              {use.effects.length !== 0 && ' and'}
+            </>
+          }
+          {use.effects.includes(Effect.Poison) &&
+            <>{' '} <strong>poisons</strong> {myVaccimon.fullName}</>
+          }
+          {use.effects.includes(Effect.Sleeping) &&
+            <>{' '} puts {myVaccimon.fullName} <strong>to sleep</strong></>
+          }
+          .
+        </p>
+      )
+    } else if (action.kind === GameActionKind.Swap && action.newVaccimon) {
+      inner = (
+        <p>
+          {action.isLocal ? 'You swap your Vaccímon to ' : 'Your opponent swaps his Vaccímon to '}
+          <strong>{action.newVaccimon.name}</strong>.
+        </p>
+      )
+    } else if (action.kind === GameActionKind.Wait) {
+      inner = (
+        <p>
+          {action.isLocal ? 'You do nothing' : 'Your opponent does nothing'}
+        </p>
+      )
+    } else {
+      inner = (
+        <p>
+          Error: Invalid Game Action!
+          <pre>{JSON.stringify(action)}</pre>
+        </p>
+      )
+    }
+
+    function performAction() {
+      if (action.kind === GameActionKind.Attack && action.abilityUse) {
+        if (action.isLocal && opponentVaccimon) {
+          setOpponentVaccimon({
+            ...opponentVaccimon,
+            health: opponentVaccimon.health - action.abilityUse.damage,
+          })
+        } else if (!action.isLocal && myVaccimon) {
+          setMyHealth(myHealth - action.abilityUse.damage)
+        }
+      } else if (action.kind === GameActionKind.Swap && action.newVaccimon) {
+        if (action.isLocal) {
+          // set already
+        } else {
+          setOpponentVaccimon(action.newVaccimon)
+        }
+      }
+
+      setLogPosition(Math.min(gameLog.length, logPosition + 1))
+    }
+
+    return (
+      <AppContainer>
+        <AppNavbar title="Fight" />
+        <Container onClick={() => performAction()}>
+          {renderGame()}
+          <div className={styles.gameActionBox}>
+            {inner}
+          </div>
+        </Container>
+      </AppContainer>
+    )
+  }
+
+  if (!hasStarted) {
+    return renderLobby()
+  } else if (logPosition < gameLog.length || !isMyTurn) {
+    return renderMessageQueue()
+  } else {
+    return renderMyTurn()
+  }
 }
