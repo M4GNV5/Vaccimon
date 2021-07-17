@@ -4,6 +4,7 @@ import {
   faHome,
   faTh,
   faTrophy,
+  faFistRaised,
   faQrcode
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -28,6 +29,12 @@ export default function AppTabbar () {
             <Nav.Link onClick={() => router.replace('/vaccidex')} className={`${styles.tab} ${router.pathname === '/vaccidex' && styles.tabActive}`}>
               <FontAwesomeIcon icon={faTh} className={styles.icon} />
               Vaccidex
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link onClick={() => router.replace('/fight')} className={`${styles.tab} ${router.pathname === '/fight' && styles.tabActive}`}>
+              <FontAwesomeIcon icon={faFistRaised} className={styles.icon} />
+              Fight
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>

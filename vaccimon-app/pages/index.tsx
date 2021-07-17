@@ -17,7 +17,7 @@ export default function Home () {
 
   return (
     <AppContainer>
-      <AppNavbar title="Dashboard" />
+      <AppNavbar title="Vaccímon" />
       <Container>
         <CardGroup className={styles.cardGroup}>
           <Link href="/vaccidex">
@@ -44,7 +44,34 @@ export default function Home () {
               </Card.Body>
             </Card>
           </Link>
+          <Link href="/scan">
+            <Card className={styles.card}>
+              <Card.Body>
+                <Card.Title>
+                Scan
+                </Card.Title>
+              </Card.Body>
+            </Card>
+          </Link>
+          <Link href="/fight">
+            <Card className={styles.card}>
+              <Card.Body>
+                <Card.Title>
+                Fight
+                </Card.Title>
+              </Card.Body>
+            </Card>
+          </Link>
         </CardGroup>
+
+        <Container>
+          <p>
+            Using this app you can scan <strong>EU Vaccination certificates</strong>. Each one gets an adorable face and a collector card.
+          </p>
+          <p>
+            The more Vaccímons you catch the stronger all of them get. <strong>Trade</strong> with your friends or challenge them on a <strong>fight</strong>!
+          </p>
+        </Container>
 
         <Container className={styles.disclaimer}>
           <p>
