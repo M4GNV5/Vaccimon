@@ -2,13 +2,12 @@ import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 
-import { Button, Container, ListGroup } from 'react-bootstrap'
+import { Button, Container, ListGroup, Modal } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faFistRaised,
-  faVirus,
+  faViruses,
   faBed,
-  faSkullCrossbones,
   faBullseye,
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -102,8 +101,9 @@ export default function Fight () {
   const [cryptoIv, setCryptoIv] = useState<Uint8Array | null>(null)
   const [keyStr, setKeyStr] = useState<string>()
 
-  const [hasStarted, setHasStarted] = useState(false)
-  const [isMyTurn, setIsMyTurn] = useState(false)
+  const [hasStarted, setHasStarted] = useState(true)
+  const [isMyTurn, setIsMyTurn] = useState(true)
+  const [showSwapMenu, setShowSwapMenu] = useState(false)
   const [myHealth, setMyHealth] = useState<number>(100)
   const [myVaccimon, setMyVaccimon] = useState<Vaccimon | null>(null)
   const [opponentVaccimon, setOpponentVaccimon] = useState<RemoteVaccimon | null>(null)
@@ -323,6 +323,19 @@ export default function Fight () {
         }
       })
     }
+    function swapTo (v: Vaccimon) {
+      addAndTransmitAction({
+        kind: GameActionKind.Swap,
+        isLocal: true,
+
+        newVaccimon: {
+          name: v.fullName, // TODO only use last name?
+          avatarUrl: v.avatarUrl,
+          health: 100, // TODO store health of already used Vaccímons?
+        }
+      })
+      setMyVaccimon(v)
+    }
     function skipTurn () {
       addAndTransmitAction({
         kind: GameActionKind.Wait,
@@ -342,6 +355,23 @@ export default function Fight () {
         <AppNavbar title="Fight" />
 
         <Container>
+          <Modal show={!!showSwapMenu} onHide={() => setShowSwapMenu(true)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Select Vaccímon</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <ListGroup>
+                {topList.map((v, i) =>
+                  <ListGroup.Item key={i} action onClick={() => swapTo(v)}>
+                    <span className={styles.swapVaccimonAvatar}><Image src={v.avatarUrl} width={48} height={48} alt="" /></span>
+                    <span className={styles.swapVaccimonName}>{v.fullName}</span>
+                    <span className={styles.swapVaccimonPower}>{formatNum(calculateStrength(v))}</span>
+                  </ListGroup.Item>
+                )}
+              </ListGroup>
+            </Modal.Body>
+          </Modal>
+
           {renderGame()}
 
           <h5 className={styles.heading}>Your Turn</h5>
@@ -359,7 +389,7 @@ export default function Fight () {
                   </>}
                   {ability.effects.map((effect, j) =>
                     <span key={j}>
-                      <FontAwesomeIcon icon={effect === Effect.Poison ? faSkullCrossbones : faBed} fixedWidth />
+                      <FontAwesomeIcon icon={effect === Effect.Poison ? faViruses : faBed} fixedWidth />
                     </span>
                   )}
                 </span>
@@ -368,7 +398,7 @@ export default function Fight () {
             <Button size="lg" variant="outline-success" onClick={() => skipTurn()}>
               Skip Turn
             </Button>
-            <Button size="lg" variant="outline-primary">
+            <Button size="lg" variant="outline-primary" onClick={() => setShowSwapMenu(true)}>
               Swap Vaccímon
             </Button>
             <Button size="lg" variant="outline-secondary" onClick={() => exitMatch()}>
@@ -390,8 +420,7 @@ export default function Fight () {
           Waiting for first move...
         </p>
       )
-    }
-    else if (action.kind === GameActionKind.Attack && action.abilityUse && opponentVaccimon && myVaccimon) {
+    } else if (action.kind === GameActionKind.Attack && action.abilityUse && opponentVaccimon && myVaccimon) {
       const use = action.abilityUse
       inner = (
         <p>
@@ -434,7 +463,7 @@ export default function Fight () {
       )
     }
 
-    function performAction() {
+    function performAction () {
       if (action.kind === GameActionKind.Attack && action.abilityUse) {
         if (action.isLocal && opponentVaccimon) {
           setOpponentVaccimon({
