@@ -1,0 +1,14 @@
+.vaccine {
+	font-weight: bold;
+}
+.strength {
+	float: right;
+}
+
+.qrCode {
+  width: 100%;
+}
+
+.heading {
+	margin-top: 10px;
+}
