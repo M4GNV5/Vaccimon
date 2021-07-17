@@ -57,6 +57,9 @@ export default function Scan () {
               id: cert.id,
               data: data
             })
+          } catch (e) {
+            console.error(e)
+            // simply ignore, the vaccimon probably is already in the vaccidex and we can simply open it
           } finally {
             repo.close()
           }

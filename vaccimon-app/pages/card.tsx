@@ -91,7 +91,7 @@ export default function Card () {
         <Container>
           <Modal show={!!showCert} onHide={() => setShowCert(null)}>
             <Modal.Header closeButton>
-              <Modal.Title>Certificate</Modal.Title>
+              <Modal.Title>{showCert && showCert.fullName}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {showCert && <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={showCert.certificate} />}
