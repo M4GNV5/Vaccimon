@@ -17,7 +17,9 @@ export default function Scan () {
     try {
       const videoEl = video.current
       const canvasEl = canvas.current
-      if (!scanning || !videoEl || !canvasEl || videoEl.videoWidth === 0 || videoEl.videoHeight === 0) { return }
+      if (!scanning || !videoEl || !canvasEl || videoEl.videoWidth === 0 || videoEl.videoHeight === 0) {
+        return
+      }
 
       canvasEl.width = videoEl.videoWidth
       canvasEl.height = videoEl.videoHeight
@@ -31,7 +33,19 @@ export default function Scan () {
       const imgData = ctx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight)
 
       const results = await scanImageData(imgData)
+      if (results.length === 0) {
+        return
+      }
+
+      setScanning(false)
+      let success = false
+      let message = null
+
       await Promise.all(results.map(async result => {
+        if (success) {
+          return
+        }
+
         try {
           const data = result.decode().trim()
           const cert = await Vaccimon.parse(data)
@@ -47,16 +61,18 @@ export default function Scan () {
             repo.close()
           }
 
-          setScanning(false)
-          router.push('/vaccidex')
+          router.push(`/card#${cert.id}`)
+          success = true
         } catch (e) {
-          if (e instanceof TypeError) {
-            console.error('Not a valid certificate:', e)
-          } else {
-            throw e
-          }
+          console.error(e)
+          message = e.message
         }
       }))
+
+      if (!success) {
+        router.push('/vaccidex')
+        alert(`Could not parse QR Code. Please make sure it is a valid vaccination certificate.\n${message}`)
+      }
     } catch (e) {
       console.error(e)
       alert(e.message)
