@@ -55,21 +55,27 @@ function genRandoms (count: number, seed: number): number[] {
 }
 
 export class Vaccimon {
+  _rawCert: string
   _cert: EuDgcCert
   _vaccinationNum: number
 
-  constructor (cert: EuDgcCert, vaccination: number = 0) {
+  constructor (raw: string, cert: EuDgcCert, vaccination: number = 0) {
+    this._rawCert = raw
     this._cert = cert
     this._vaccinationNum = vaccination
   }
 
   static async parse (data: string, vaccination: number = 0) {
     const cert = await window.EuDgc_parse(data)
-    return new Vaccimon(cert, vaccination)
+    return new Vaccimon(data, cert, vaccination)
   }
 
   private get _vaccination (): EuDgcVaccincation {
     return this._cert.v[this._vaccinationNum]
+  }
+
+  get certificate (): string {
+    return this._rawCert
   }
 
   get id (): string {
