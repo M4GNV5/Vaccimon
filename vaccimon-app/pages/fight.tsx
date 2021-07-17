@@ -377,7 +377,7 @@ export default function Fight () {
           <h5 className={styles.heading}>Your Turn</h5>
           <div className="d-grid gap-2">
             {myVaccimon && getAbilities(myVaccimon).map((ability, i) =>
-              <Button size="lg" key={innerWidth} variant="outline-danger" disabled={!opponentVaccimon} onClick={() => performAbility(ability)}>
+              <Button size="lg" key={i} variant="outline-danger" disabled={!opponentVaccimon} onClick={() => performAbility(ability)}>
                 <span className={styles.abilityKind}>Attack:{' '}</span>
                 <span className={styles.abilityName}>{ability.name}</span>
                 <span className={styles.abilityEffects}>

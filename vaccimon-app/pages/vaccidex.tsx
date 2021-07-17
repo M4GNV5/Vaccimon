@@ -14,7 +14,7 @@ export default function Vaccidex () {
     <AppContainer>
       <AppNavbar title="Vaccidex" />
       <Container className={styles.previews}>
-        {vaccimon && vaccimon.map((v, i) =>
+        {vaccimon && vaccimon.map(v =>
           <Link key={v.id} href={`/card#${v.id}`} passHref>
             <a className={styles.preview}>
               <Image src={v.avatarUrl} width={64} height={64} alt="" />

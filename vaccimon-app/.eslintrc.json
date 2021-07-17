@@ -24,6 +24,8 @@
     ],
     "rules": {
         "@next/next/link-passhref": "off",
-        "comma-dangle": "off"
+        "comma-dangle": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error"
     }
 }
