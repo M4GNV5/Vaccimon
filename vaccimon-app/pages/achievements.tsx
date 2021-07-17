@@ -201,6 +201,12 @@ export const achievements: Achievement[] = [
       (x.fullName === 'Spikevax' && Math.abs(x.vaccinationDate.getTime() - y.vaccinationDate.getTime()) <= 28 * 24 * 60 * 60 * 1000) ||
       (x.fullName === 'Vaxzevria' && Math.abs(x.vaccinationDate.getTime() - y.vaccinationDate.getTime()) <= 63 * 24 * 60 * 60 * 1000)
     )))
+  },
+  {
+    name: 'Multilingual',
+    description: 'Catch a vaccimon with a non-latin name',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => vaccidex.some(x => !/[a-zA-Z]/.test(x.fullName))
   }
 ]
 
