@@ -19,10 +19,22 @@ export default function Fight () {
   const [cryptoIv, setCryptoIv] = useState<Uint8Array | null>(null)
   const [keyStr, setKeyStr] = useState<string>()
 
+  // XXX use key/iv to shut up eslint
+  console.log(cryptoKey, cryptoIv)
+
   const formatNum = (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })).format
 
   useEffect(() => {
-    async function load () {
+    async function loadKeys () {
+      const [base64Key, base64Iv] = window.location.hash.substr(1).split('&')
+      const rawKey = new Uint8Array(atob(base64Key).split('').map(x => x.charCodeAt(0)))
+      const iv = new Uint8Array(atob(base64Iv).split('').map(x => x.charCodeAt(0)))
+
+      const key = await window.crypto.subtle.importKey('raw', rawKey, 'AES-GCM', true, ['encrypt', 'decrypt'])
+      setCryptoKey(key)
+      setCryptoIv(iv)
+    }
+    async function generateKeys () {
       const iv = window.crypto.getRandomValues(new Uint8Array(12))
       const key = await window.crypto.subtle.generateKey(
         {
@@ -40,7 +52,12 @@ export default function Fight () {
       const base64Iv = btoa(String.fromCharCode.apply(null, Array.from(iv)))
       setKeyStr(`${base64Key}&${base64Iv}`)
     }
-    load()
+
+    if (window.location.hash) {
+      loadKeys()
+    } else {
+      generateKeys()
+    }
   }, [])
 
   const calculateStrength = useCallback(function (v: Vaccimon): number {
@@ -87,7 +104,7 @@ export default function Fight () {
     return dup
   }, [vaccimon, calculateStrength])
 
-  function renderLobby() {
+  function renderLobby () {
     return (
       <AppContainer>
           <AppNavbar title="Fight Lobby" />
@@ -127,9 +144,10 @@ export default function Fight () {
             </ListGroup>
 
             <h3 className={styles.heading}>QR Code</h3>
-            <a href={`https://vaccimon.app/fight#${keyStr}`} target="_black" rel="noopener">
+            {!keyStr && <p>No encryption key generated yet...</p>}
+            {keyStr && <a className={styles.matchLink} href={`https://vaccimon.app/fight#${keyStr}`} target="_black" rel="noopener">
               <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={`https://vaccimon.app/fight#${keyStr}`} />
-            </a>
+            </a>}
 
             <h3 className={styles.heading}>Explanation</h3>
             <p>Let your opponent scan the above QR code to start an encrypted fight.</p>
