@@ -7,7 +7,7 @@
 .preview {
   text-align: center;
   padding: 5px;
-  margin: 10px;
+  margin: 5px;
   width: calc(33% - 20px);
 }
 
@@ -20,4 +20,5 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;
+  font-size: 0.9em;
 }
