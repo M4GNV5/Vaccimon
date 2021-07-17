@@ -64,6 +64,11 @@ export default function Fight () {
     // base strength based on level
     let strength = [0.3, 0.6, 1][v.level - 1]
 
+    // rare vaccine bonus
+    if (!['Comirnaty', 'Spikevax', 'Vaxzevria', 'COVID-19 Vaccine Janssen'].includes(v.vaccine)) {
+      strength *= 3
+    }
+
     // bonus for other vaccimon with same family name
     const family = new Set(vaccimon.filter(x => x.lastName === v.lastName).map(x => x.fullName))
     strength *= Math.sqrt(family.size)
@@ -129,7 +134,7 @@ export default function Fight () {
               </ListGroup.Item>
               <ListGroup.Item>
                 <span className={styles.vaccine}>White Vaccímon</span>
-                <span className={styles.strength}>{formatNum(10 * calculateStrengthsOf(v => !['Comirnaty', 'Spikevax', 'Vaxzevria', 'COVID-19 Vaccine Janssen'].includes(v.vaccine)))}</span>
+                <span className={styles.strength}>{formatNum(calculateStrengthsOf(v => !['Comirnaty', 'Spikevax', 'Vaxzevria', 'COVID-19 Vaccine Janssen'].includes(v.vaccine)))}</span>
               </ListGroup.Item>
             </ListGroup>
 
