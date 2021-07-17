@@ -71,9 +71,7 @@ export default function Home () {
           <p>
             The more Vaccímons you catch the stronger all of them get. <strong>Trade</strong> with your friends or challenge them on a <strong>fight</strong>!
           </p>
-        </Container>
-
-        <Container className={styles.disclaimer}>
+          <br />
           <p>
             This project is a <strong>parody</strong> and a fun way to show the downsides of permanent non-changing vaccination certificates.
             It is <strong>not</strong> associated with Nintendo, The Pokémon Company or any government entity.
