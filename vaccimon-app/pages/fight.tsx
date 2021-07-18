@@ -20,6 +20,22 @@ import { Vaccimon } from '../lib/vaccimon'
 
 import styles from '../styles/fight.module.css'
 
+// manual definitions until we find out how to import types without SSR
+declare class PeerClass {
+  public constructor(id?: string, options?: any);
+  public on(name: string, func: (param: any) => void): void;
+}
+type DataConnection = {
+  on: (name: string, func: (param: any) => void) => void,
+  send: (val: any) => void,
+  close: () => void,
+}
+
+let Peer: PeerClass | null
+if (typeof window !== 'undefined') {
+  Peer = require('peerjs').default
+}
+
 enum Effect {
   Poison,
   Sleeping,
@@ -41,6 +57,7 @@ enum GameActionKind {
 type RemoteVaccimon = {
   avatarUrl: string,
   name: string,
+  strength: number,
   health: number,
 }
 type GameAction = {
@@ -97,12 +114,12 @@ const fallbackBaseAbility: Ability = {
 export default function Fight () {
   const router = useRouter()
   const vaccimon = useVaccimon()
-  const [cryptoKey, setCryptoKey] = useState<CryptoKey | null>(null)
-  const [cryptoIv, setCryptoIv] = useState<Uint8Array | null>(null)
-  const [keyStr, setKeyStr] = useState<string>()
 
-  const [hasStarted, setHasStarted] = useState(true)
-  const [isMyTurn, setIsMyTurn] = useState(true)
+  const [gameId, setGameId] = useState<string>()
+  const [connection, setConnection] = useState<DataConnection | null>(null)
+
+  const [hasStarted, setHasStarted] = useState(false)
+  const [isMyTurn, setIsMyTurn] = useState(false)
   const [showSwapMenu, setShowSwapMenu] = useState(false)
   const [myHealth, setMyHealth] = useState<number>(100)
   const [myVaccimon, setMyVaccimon] = useState<Vaccimon | null>(null)
@@ -110,48 +127,91 @@ export default function Fight () {
   const [gameLog, setGameLog] = useState<GameAction[]>([])
   const [logPosition, setLogPosition] = useState<number>(0)
 
-  // XXX use key/iv to shut up eslint
-  console.log(cryptoKey, cryptoIv, setMyVaccimon)
-
   const formatNum = (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })).format
 
+  const addRemoteAction = useCallback((data: GameAction) => {
+    const dup = [...gameLog]
+    if (data.kind === GameActionKind.Attack && data.abilityUse) {
+      dup.push({
+        kind: data.kind,
+        isLocal: false,
+        abilityUse: data.abilityUse,
+      })
+    } else if (data.kind === GameActionKind.Swap && data.newVaccimon) {
+      dup.push({
+        kind: data.kind,
+        isLocal: false,
+        newVaccimon: data.newVaccimon,
+      })
+    } else if (data.kind === GameActionKind.Wait || data.kind === GameActionKind.End) {
+      dup.push({
+        kind: data.kind,
+        isLocal: false,
+      })
+    }
+
+    setGameLog(dup)
+  }, [gameLog])
   useEffect(() => {
-    async function loadKeys () {
-      const [base64Key, base64Iv] = window.location.hash.substr(1).split('&')
-      const rawKey = new Uint8Array(atob(base64Key).split('').map(x => x.charCodeAt(0)))
-      const iv = new Uint8Array(atob(base64Iv).split('').map(x => x.charCodeAt(0)))
-
-      const key = await window.crypto.subtle.importKey('raw', rawKey, 'AES-GCM', true, ['encrypt', 'decrypt'])
-      setCryptoKey(key)
-      setCryptoIv(iv)
-
-      setHasStarted(true)
-      setIsMyTurn(true)
-    }
-    async function generateKeys () {
-      const iv = window.crypto.getRandomValues(new Uint8Array(12))
-      const key = await window.crypto.subtle.generateKey(
-        {
-          name: 'AES-GCM',
-          length: 256
-        },
-        true,
-        ['encrypt', 'decrypt']
-      )
-      setCryptoKey(key)
-      setCryptoIv(iv)
-
-      const rawKey = await window.crypto.subtle.exportKey('raw', key)
-      const base64Key = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(rawKey))))
-      const base64Iv = btoa(String.fromCharCode.apply(null, Array.from(iv)))
-      setKeyStr(`${base64Key}&${base64Iv}`)
+    if (!Peer) {
+      // XXX will never happen
+      return
     }
 
-    if (window.location.hash) {
-      loadKeys()
-    } else {
-      generateKeys()
+    function initializeConnection (conn: DataConnection) {
+      conn.on('open', () => {
+        setHasStarted(true)
+      })
+
+      conn.on('data', addRemoteAction)
+
+      conn.on('error', e => {
+        console.error(e)
+        alert(e.message)
+      })
+
+      conn.on('close', () => {
+        alert('Connection closed :(')
+        router.push('/')
+      })
     }
+
+    const peer = new Peer(undefined, { debug: 3 })
+
+    peer.on('error', e => {
+      console.error(e)
+      alert(`Connection Error: ${e.type}`)
+    })
+
+    peer.on('connection', conn => {
+      // we were first and someone just connected
+      if (connection) {
+        // more people? nope
+        conn.close()
+      } else {
+        initializeConnection(conn)
+        setConnection(conn)
+        setHasStarted(true)
+      }
+    })
+
+    peer.on('open', () => {
+      if (window.location.hash) {
+        // we were second and need to connect
+        const id = window.location.hash.substr(1)
+        const conn = peer.connect(id)
+        initializeConnection(conn)
+        setConnection(conn)
+        setIsMyTurn(true)
+      } else {
+        // we were first and are waiting
+        setGameId(peer.id)
+      }
+    })
+
+    peer.on('disconnected', () => {
+      alert('Connection to Lobby lost :(')
+    })
   }, [])
 
   const calculateStrength = useCallback(function (v: Vaccimon): number {
@@ -212,13 +272,15 @@ export default function Fight () {
   }
 
   function addAndTransmitAction (action: GameAction) {
+    if (connection) {
+      connection.send(action)
+    }
+
     const dup = [...gameLog]
     dup.push(action)
     setGameLog(dup)
 
     setIsMyTurn(false)
-
-    // TODO: transmit
   }
 
   const topList = useMemo(() => {
@@ -268,9 +330,9 @@ export default function Fight () {
             </ListGroup>
 
             <h3 className={styles.heading}>QR Code</h3>
-            {!keyStr && <p>No encryption key generated yet...</p>}
-            {keyStr && <a className={styles.matchLink} href={`https://vaccimon.app/fight#${keyStr}`} target="_black" rel="noopener">
-              <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={`https://vaccimon.app/fight#${keyStr}`} />
+            {!gameId && <p>No game generated yet...</p>}
+            {gameId && <a className={styles.matchLink} href={`https://vaccimon.app/fight#${gameId}`} target="_black" rel="noopener">
+              <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={`https://vaccimon.app/fight#${gameId}`} />
             </a>}
 
             <h3 className={styles.heading}>Explanation</h3>
@@ -309,8 +371,13 @@ export default function Fight () {
 
   function renderMyTurn () {
     function performAbility (ability: Ability) {
+      if (!myVaccimon) {
+        return
+      }
+
       const { minDamage, maxDamage, effects } = ability
-      const damage = minDamage + Math.round(Math.random() * (maxDamage - minDamage))
+      const strength = calculateStrength(myVaccimon)
+      const damage = strength * (minDamage + Math.round(Math.random() * (maxDamage - minDamage)))
 
       addAndTransmitAction({
         kind: GameActionKind.Attack,
@@ -331,9 +398,11 @@ export default function Fight () {
         newVaccimon: {
           name: v.fullName, // TODO only use last name?
           avatarUrl: v.avatarUrl,
+          strength: calculateStrength(v),
           health: 100, // TODO store health of already used Vaccímons?
         }
       })
+      setShowSwapMenu(false)
       setMyVaccimon(v)
     }
     function skipTurn () {
@@ -355,7 +424,7 @@ export default function Fight () {
         <AppNavbar title="Fight" />
 
         <Container>
-          <Modal show={!!showSwapMenu} onHide={() => setShowSwapMenu(true)}>
+          <Modal show={!!showSwapMenu} onHide={() => setShowSwapMenu(false)}>
             <Modal.Header closeButton>
               <Modal.Title>Select Vaccímon</Modal.Title>
             </Modal.Header>
@@ -428,7 +497,7 @@ export default function Fight () {
           <strong>{opponentVaccimon.name}</strong> uses <strong>{use.ability.name}</strong>
           {(use.damage !== 0 || use.effects.length === 0) &&
             <>
-              {' '}dealing <strong>{use.damage}</strong> damage
+              {' '}dealing <strong>{formatNum(use.damage)}</strong> damage
               {use.effects.length !== 0 && ' and'}
             </>
           }
@@ -454,6 +523,12 @@ export default function Fight () {
           {action.isLocal ? 'You do nothing' : 'Your opponent does nothing'}
         </p>
       )
+    } else if (action.kind === GameActionKind.End) {
+      inner = (
+        <p>
+          The game ended...
+        </p>
+      )
     } else {
       inner = (
         <p>
@@ -466,12 +541,21 @@ export default function Fight () {
     function performAction () {
       if (action.kind === GameActionKind.Attack && action.abilityUse) {
         if (action.isLocal && opponentVaccimon) {
-          setOpponentVaccimon({
-            ...opponentVaccimon,
-            health: opponentVaccimon.health - action.abilityUse.damage,
-          })
+          const health = opponentVaccimon.health - action.abilityUse.damage
+          if (health <= 0) {
+            setOpponentVaccimon(null)
+          } else {
+            setOpponentVaccimon({
+              ...opponentVaccimon,
+              health,
+            })
+          }
         } else if (!action.isLocal && myVaccimon) {
-          setMyHealth(myHealth - action.abilityUse.damage)
+          const health = myHealth - action.abilityUse.damage
+          setMyHealth(health)
+          if (health <= 0) {
+            setMyVaccimon(null)
+          }
         }
       } else if (action.kind === GameActionKind.Swap && action.newVaccimon) {
         if (action.isLocal) {
@@ -479,8 +563,18 @@ export default function Fight () {
         } else {
           setOpponentVaccimon(action.newVaccimon)
         }
+      } else if (action.kind === GameActionKind.End) {
+        if (connection) {
+          connection.close()
+        }
+
+        alert('Other player quit the game! What a coward')
+        router.push('/')
       }
 
+      if (logPosition === gameLog.length - 1 && !action.isLocal) {
+        setIsMyTurn(true)
+      }
       setLogPosition(Math.min(gameLog.length, logPosition + 1))
     }
 

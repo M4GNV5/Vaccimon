@@ -17,6 +17,7 @@
     "eudgc": "^1.0.3",
     "idb": "^6.1.2",
     "next": "11.0.1",
+    "peerjs": "^1.3.2",
     "qrcode": "^1.4.4",
     "react": "17.0.2",
     "react-bootstrap": "^2.0.0-beta.2",
