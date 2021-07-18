@@ -31,6 +31,12 @@ const colors: {[key: string]: string} = {
   'COVID-19 Vaccine Janssen': 'F5DC95'
 }
 
+function assert (condition: boolean, message: string) {
+  if (!condition) {
+    throw new Error(message)
+  }
+}
+
 /**
  * Fixes uppercase names
  * e.g. JOHN DOE -> John Doe
@@ -63,6 +69,9 @@ export class Vaccimon {
     this._rawCert = raw
     this._cert = cert
     this._vaccinationNum = vaccination
+
+    assert(!!this._cert.nam, 'Certificate does not contain a name')
+    assert(!!this._cert.v && this._cert.v.length > 0, 'Certificate does not contain a vaccination')
   }
 
   static async parse (data: string, vaccination: number = 0) {

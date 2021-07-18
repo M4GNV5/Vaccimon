@@ -10,9 +10,14 @@ export default function useVaccimon (): Vaccimon[] {
       const repo = new VaccimonRepo()
       try {
         await repo.open()
-        const certs = await repo.getAllCerts()
-        const vaccimon = await Promise.all(certs.map(x => Vaccimon.parse(x.data)))
-
+        const vaccimon = []
+        for (const cert of await repo.getAllCerts()) {
+          try {
+            vaccimon.push(await Vaccimon.parse(cert.data))
+          } catch (e) {
+            console.error(e)
+          }
+        }
         vaccimon.sort((a, b) => a.lastName.localeCompare(b.lastName))
         setVaccimon(vaccimon)
       } catch (e) {
