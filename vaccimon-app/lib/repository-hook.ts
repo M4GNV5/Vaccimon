@@ -11,9 +11,9 @@ export default function useVaccimon (): Vaccimon[] {
       try {
         await repo.open()
         const certs = await repo.getAllCerts()
-        const vaccimon = (await Promise.all(certs.map(cert => {
+        const vaccimon = (await Promise.all(certs.map(async cert => {
           try {
-            return Vaccimon.parse(cert.data)
+            return await Vaccimon.parse(cert.data)
           } catch (e) {
             console.error(e)
             return null

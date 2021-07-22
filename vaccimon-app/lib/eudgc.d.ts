@@ -30,9 +30,21 @@ declare module 'eudgc' {
     'ver': string; // "1.0.0" ?
   }
 
+  export interface CertInfo {
+    subject: string; // subject of the certificate
+    issuer: string; // string that describes the issuer of the certificte
+    notbefore: number; // date before which the certificate should be considered invalid
+    notafter: number; // date after which the certificate should be considered invalid
+    pubkey: string; // the publickey of the certificate in a way that the browser-crypto api can process it
+    rawX509data: string; // the X509 certificate in binary DER format, encoded as base64
+    // the rawX509 string contains all the other fields, but needs to be decoded to access that information
+    // one way to do that is using  openssl -inform DER -text
+  }
+
   declare global {
     interface Window {
       EuDgc_parse: (encodedData: string) => Promise<EuDgcCert>
+      EuDgc_validate: (encodedData: string) => Promise<CertInfo>
     }
   }
 }
