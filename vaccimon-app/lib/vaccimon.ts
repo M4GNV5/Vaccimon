@@ -74,9 +74,9 @@ export class Vaccimon {
     assert(!!this._cert.v && this._cert.v.length > 0, 'Certificate does not contain a vaccination')
   }
 
-  static async parse (data: string, vaccination: number = 0) {
+  static async parse (data: string, vaccination: number = 0, validate: boolean = false) {
     try {
-      assert(!!await window.EuDgc_validate(data), 'Signature is invalid')
+      assert(!validate || !!await window.EuDgc_validate(data), 'Signature is invalid')
     } catch (e) {
       throw new Error(`Failed to validate certificate (${e.message || e})`)
     }

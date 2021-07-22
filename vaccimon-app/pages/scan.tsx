@@ -48,7 +48,7 @@ export default function Scan () {
 
         try {
           const data = result.decode().trim()
-          const cert = await Vaccimon.parse(data)
+          const cert = await Vaccimon.parse(data, 0, true)
 
           const repo = new VaccimonRepo()
           try {
