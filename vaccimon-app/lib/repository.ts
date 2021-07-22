@@ -52,11 +52,11 @@ export default class VaccimonRepo {
     await this.db.add(CERT_STORE_NAME, vaccimon)
   }
 
-  async deleteCert (vaccimon: VaccimonCert): Promise<void> {
+  async deleteCert (id: string): Promise<void> {
     if (!this.db) {
       throw new Error('Repository not opened')
     }
 
-    await this.db.delete(CERT_STORE_NAME, vaccimon.id)
+    await this.db.delete(CERT_STORE_NAME, id)
   }
 }

@@ -65,8 +65,8 @@ export class Vaccimon {
   _cert: EuDgcCert
   _vaccinationNum: number
 
-  constructor (raw: string, cert: EuDgcCert, vaccination: number = 0) {
-    this._rawCert = raw
+  constructor (rawCert: string, cert: EuDgcCert, vaccination: number = 0) {
+    this._rawCert = rawCert
     this._cert = cert
     this._vaccinationNum = vaccination
 

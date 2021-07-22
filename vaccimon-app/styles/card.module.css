@@ -60,12 +60,14 @@
   float: right;
 }
 
-.showQRButton {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.buttons button {
+  margin: 10px 5px;
 }
 
 .qrCode {

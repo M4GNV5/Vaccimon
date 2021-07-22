@@ -12,11 +12,14 @@ import {
   faVirus,
   faSyringe,
   faFlagUsa,
-  faTint
+  faTint,
+  faQrcode,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons'
 import SwipableViews from 'react-swipeable-views'
 
 import { Vaccimon } from '../lib/vaccimon'
+import VaccimonRepo from '../lib/repository'
 import useVaccimon from '../lib/repository-hook'
 
 import AppContainer from '../components/AppContainer'
@@ -85,6 +88,21 @@ export default function Card () {
     setIndex(idx)
   }
 
+  async function remove (v: Vaccimon) {
+    if (!confirm(`Do you want to remove ${v.fullName}?`)) {
+      return
+    }
+
+    const repo = new VaccimonRepo()
+    try {
+      await repo.open()
+      await repo.deleteCert(v.id)
+      router.replace('/vaccidex')
+    } finally {
+      await repo.close()
+    }
+  }
+
   return (
     <AppContainer>
         <AppNavbar title="Vaccidex" />
@@ -140,7 +158,14 @@ export default function Card () {
                       </span>
                     </div>
                   </div>
-                  <Button className={styles.showQRButton} variant="secondary" onClick={() => setShowCert(v)}>Show certificate</Button>
+                  <div className={styles.buttons}>
+                    <Button variant="secondary" onClick={() => setShowCert(v)}>
+                      <FontAwesomeIcon icon={faQrcode} title="Show certificate" />
+                    </Button>
+                    <Button variant="secondary" onClick={() => remove(v)}>
+                      <FontAwesomeIcon icon={faTrash} title="Remove certificate" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </SwipableViews>
