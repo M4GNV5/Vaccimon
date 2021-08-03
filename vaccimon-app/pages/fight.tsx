@@ -128,6 +128,16 @@ export default function Fight () {
   const [logPosition, setLogPosition] = useState<number>(0)
 
   const formatNum = (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })).format
+  const getStrengthColor = (strength: number) => {
+    if (strength < 0.7)
+      return "transparent";
+    else if (strength < 1)
+      return "#ffcb00";
+    else if (strength < 2)
+      return "orange";
+    else
+      return "#ff5622";
+  }
 
   const addRemoteAction = useCallback((data: GameAction) => {
     const dup = [...gameLog]
@@ -431,10 +441,10 @@ export default function Fight () {
             <Modal.Body>
               <ListGroup>
                 {topList.map((v, i) =>
-                  <ListGroup.Item key={i} action onClick={() => swapTo(v)}>
+                  <ListGroup.Item key={i} action onClick={() => swapTo(v)} className={styles.swapVaccimonItem} style={{"--badge-color": getStrengthColor(calculateStrength(v))}}>
                     <span className={styles.swapVaccimonAvatar}><Image src={v.avatarUrl} width={48} height={48} alt="" /></span>
                     <span className={styles.swapVaccimonName}>{v.fullName}</span>
-                    <span className={styles.swapVaccimonPower}>{formatNum(calculateStrength(v))}</span>
+                    <span className={styles.swapVaccimonPower}><span>{formatNum(calculateStrength(v))}</span></span>
                   </ListGroup.Item>
                 )}
               </ListGroup>
