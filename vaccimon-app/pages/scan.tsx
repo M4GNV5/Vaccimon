@@ -48,8 +48,16 @@ export default function Scan () {
 
         try {
           const data = result.decode().trim()
-          const cert = await Vaccimon.parse(data, 0, true)
 
+          const match = /^https:\/\/vaccimon\.app(\/fight#.*)$/.exec(data)
+          console.log(data, match)
+          if (match) {
+            router.push(match[1])
+            success = true
+            return
+          }
+
+          const cert = await Vaccimon.parse(data, 0, true)
           const repo = new VaccimonRepo()
           try {
             await repo.open()
