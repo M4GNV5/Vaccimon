@@ -341,8 +341,8 @@ export default function Fight () {
 
             <h3 className={styles.heading}>QR Code</h3>
             {!gameId && <p>No game generated yet...</p>}
-            {gameId && <a className={styles.matchLink} href={`https://vaccimon.app/fight#${gameId}`} target="_black" rel="noopener">
-              <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={`https://vaccimon.app/fight#${gameId}`} />
+            {gameId && <a className={styles.matchLink} href={`${window.location.origin}/fight#${gameId}`} target="_black" rel="noopener">
+              <QRCodeCanvas className={styles.qrCode} width={1024} height={1024} value={`${window.location.origin}/fight#${gameId}`} />
             </a>}
 
             <h3 className={styles.heading}>Explanation</h3>
