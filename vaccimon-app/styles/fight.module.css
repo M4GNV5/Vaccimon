@@ -1,3 +1,42 @@
+@keyframes damage-low {
+  0% { transform: translate(-3.03863px, -3.22876px); }
+  10% { transform: translate(-0.911264px, 2.29907px); }
+  20% { transform: translate(-2.68166px, 0.903249px); }
+  30% { transform: translate(-1.87459px, -3.73607px); }
+  40% { transform: translate(0.0422493px, 1.55632px); }
+  50% { transform: translate(1.04613px, -3.41179px); }
+  60% { transform: translate(3.14155px, -0.250565px); }
+  70% { transform: translate(-1.6414px, 2.51557px); }
+  80% { transform: translate(0.53937px, -0.758283px); }
+  90% { transform: translate(2.5281px, 3.50184px); }
+}
+
+@keyframes damage-medium {
+  0% { transform: translate(-4.50061px, -0.669654px); }
+  10% { transform: translate(7.02249px, -1.77999px); }
+  20% { transform: translate(1.38985px, -1.71108px); }
+  30% { transform: translate(-1.81127px, -2.89748px); }
+  40% { transform: translate(-7.11047px, -5.36755px); }
+  50% { transform: translate(-4.25021px, 6.74973px); }
+  60% { transform: translate(4.29215px, 3.54987px); }
+  70% { transform: translate(0.37492px, -3.70922px); }
+  80% { transform: translate(-1.82209px, 1.26446px); }
+  90% { transform: translate(-3.32928px, 3.74315px); }
+}
+
+@keyframes damage-high {
+  0% { transform: translate(-2.45051px, 6.63662px); }
+  10% { transform: translate(4.60102px, -23.0961px); }
+  20% { transform: translate(3.57419px, 19.5242px); }
+  30% { transform: translate(19.1638px, -20.7321px); }
+  40% { transform: translate(-1.70826px, 18.4714px); }
+  50% { transform: translate(-8.51446px, 1.42241px); }
+  60% { transform: translate(-3.03891px, -21.3507px); }
+  70% { transform: translate(14.7372px, -19.3314px); }
+  80% { transform: translate(-10.9168px, -14.4979px); }
+  90% { transform: translate(6.33912px, 1.32141px); }
+}
+
 .vaccine {
   font-weight: bold;
 }
@@ -74,4 +113,128 @@
   width: 100%;
   height: 100%;
   transform: rotate(45deg);
+}
+
+.vaccimons {
+  position: relative;
+  width: 80%;
+  margin: auto;
+  --img-width: 80px;
+}
+
+.vaccimons:after {
+  display: block;
+  content: "";
+  padding-top: 100%;
+}
+
+@media screen and (max-width: 499px) { .vaccimons { width: 100%; } }
+@media screen and (min-width: 300px) { .vaccimons { --img-width: 120px; } }
+@media screen and (min-width: 768px) and (min-height: 450px) { .vaccimons { --img-width: 200px; } }
+
+.vaccimons > .opponentVaccimon,
+.vaccimons > .myVaccimon {
+  position: absolute;
+  text-align: center;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  display: grid;
+  grid-template-columns: var(--img-width, auto) 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.vaccimons > .myVaccimon {
+  grid-template-columns: 1fr var(--img-width, auto);
+}
+
+.vaccimons > .myVaccimon {
+  top: 50%;
+}
+
+.vaccimons > .vsText {
+  position: absolute;
+  text-align: center;
+  left: 0;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.gameActionBox {
+  border: 2px solid black;
+  padding: 8px;
+}
+
+.vaccimonImage {
+  height: 100%;
+  grid-area: 1 / 1 / span 2 / span 1;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vaccimonImage > img {
+  max-height: 80%;
+  max-width: 80%;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.vaccimons > .myVaccimon > .vaccimonImage {
+  grid-area: 1 / 2 / span 2 / span 1;
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+@media screen and (min-aspect-ratio: 4/3),
+       screen and (min-width: 991px) and (max-aspect-ratio: 2/3) {
+  .gameContainer {
+    display: flex;
+  }
+
+  /* .gameContainer > .gameActionBoxOurTurn */
+
+  .vaccimons {
+    width: 80vh;
+    height: 80vh;
+    margin-right: 16px;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+
+  .vaccimons:after {
+    padding-top: unset;
+  }
+}
+
+.vaccimonName {
+  align-self: flex-end;
+  padding: 8px;
+}
+
+.healthBar {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 2px solid black;
+  position: relative;
+  align-self: flex-start;
+}
+
+.healthBar:before {
+  display: block;
+  content: "";
+  width: calc(var(--health, 100) * 1%);
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: hsl(calc(var(--health, 100) * 120 / 100), 100%, 46%);
 }

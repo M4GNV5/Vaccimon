@@ -56,10 +56,27 @@ enum GameActionKind {
 }
 type RemoteVaccimon = {
   avatarUrl: string,
-  name: string,
+  fullName: string,
   strength: number,
   health: number,
 }
+type LocalVaccimon = {
+  certificate: string,
+  id: string,
+  firstName: string,
+  lastName: string,
+  fullName: string,
+  dateOfBirth: Date,
+  vaccine: string,
+  vaccinationDate: Date,
+  level: number,
+  country: string,
+  avatarUrl: string,
+  certificateSigner: string,
+  isFullyVaccinated: boolean,
+  health: number,
+  strength: number
+};
 type GameAction = {
   kind: GameActionKind,
   isLocal: boolean,
@@ -121,8 +138,7 @@ export default function Fight () {
   const [hasStarted, setHasStarted] = useState(false)
   const [isMyTurn, setIsMyTurn] = useState(false)
   const [showSwapMenu, setShowSwapMenu] = useState(false)
-  const [myHealth, setMyHealth] = useState<number>(100)
-  const [myVaccimon, setMyVaccimon] = useState<Vaccimon | null>(null)
+  const [myVaccimon, setMyVaccimon] = useState<LocalVaccimon | null>(null)
   const [opponentVaccimon, setOpponentVaccimon] = useState<RemoteVaccimon | null>(null)
   const [gameLog, setGameLog] = useState<GameAction[]>([])
   const [logPosition, setLogPosition] = useState<number>(0)
@@ -266,7 +282,7 @@ export default function Fight () {
       .reduce((a, b) => a + b, 0)
   }
 
-  function getAbilities (v: Vaccimon): Ability[] {
+  function getAbilities (v: LocalVaccimon): Ability[] {
     const result: Ability[] = []
 
     if (v.vaccine in baseAbilities) {
@@ -293,9 +309,29 @@ export default function Fight () {
     setIsMyTurn(false)
   }
 
+  function convertToLocalVaccimon(vaccimon: Vaccimon, strength: number): LocalVaccimon {
+    return {
+      certificate: vaccimon.certificate,
+      id: vaccimon.id,
+      firstName: vaccimon.firstName,
+      lastName: vaccimon.lastName,
+      fullName: vaccimon.fullName,
+      dateOfBirth: vaccimon.dateOfBirth,
+      vaccine: vaccimon.vaccine,
+      vaccinationDate: vaccimon.vaccinationDate,
+      level: vaccimon.level,
+      country: vaccimon.country,
+      avatarUrl: vaccimon.avatarUrl,
+      certificateSigner: vaccimon.certificateSigner,
+      isFullyVaccinated: vaccimon.isFullyVaccinated,
+      health: 100,
+      strength
+    }
+  }
+
   const topList = useMemo(() => {
-    const dup = vaccimon.slice(0)
-    dup.sort((a, b) => calculateStrength(b) - calculateStrength(a))
+    const dup = vaccimon.map(v => convertToLocalVaccimon(v, calculateStrength(v)))
+    dup.sort((a, b) => b.strength - a.strength)
 
     return dup
   }, [vaccimon, calculateStrength])
@@ -305,7 +341,7 @@ export default function Fight () {
       <AppContainer>
           <AppNavbar title="Fight Lobby" />
           <Container>
-            <h3>Your strenghts</h3>
+            <h3>Your strengths</h3>
             <ListGroup>
               <ListGroup.Item>
                 <span className={styles.vaccine}>Green Vaccímon</span>
@@ -334,7 +370,7 @@ export default function Fight () {
               {topList.slice(0, 5).map((v, i) =>
                 <ListGroup.Item key={i} action onClick={() => router.push(`/card#${v.id}`)}>
                   <span className={styles.vaccine}>{v.fullName}</span>
-                  <span className={styles.strength}>{formatNum(calculateStrength(v))}</span>
+                  <span className={styles.strength}>{formatNum(v.strength)}</span>
                 </ListGroup.Item>
               )}
             </ListGroup>
@@ -359,24 +395,31 @@ export default function Fight () {
 
   function renderGame () {
     return (
-      <>
+      <div className={styles.vaccimons}>
         <div className={styles.opponentVaccimon}>
-          {opponentVaccimon && <Image src={opponentVaccimon.avatarUrl} width={245} height={245} alt="" />}
-          <span className={styles.vaccimonName}>
-            {opponentVaccimon ? opponentVaccimon.name : 'No Vaccimon'}
-          </span>
+          {renderVaccimon(opponentVaccimon)}
         </div>
         <div className={styles.vsText}>
           VS
         </div>
         <div className={styles.myVaccimon}>
-          {myVaccimon && <Image src={myVaccimon.avatarUrl} width={245} height={245} alt="" />}
-          <span className={styles.vaccimonName}>
-            {myVaccimon ? myVaccimon.fullName : 'No Vaccimon'}
-          </span>
+          {renderVaccimon(myVaccimon)}
         </div>
-      </>
+      </div>
     )
+  }
+
+  function renderVaccimon(vaccimon: RemoteVaccimon | LocalVaccimon | null) {
+    if (!vaccimon)
+      return "-";
+    return <>
+      {vaccimon && <div className={styles.vaccimonImage}><img src={vaccimon.avatarUrl} alt="" width="1024" height="1024" /></div>}
+      <span className={styles.vaccimonName}>
+        {vaccimon ? vaccimon.fullName : 'No Vaccimon'}
+      </span>
+      <span className={styles.healthBar} style={{"--health": vaccimon.health}}>
+      </span>
+    </>;
   }
 
   function renderMyTurn () {
@@ -386,7 +429,7 @@ export default function Fight () {
       }
 
       const { minDamage, maxDamage, effects } = ability
-      const strength = calculateStrength(myVaccimon)
+      const strength = myVaccimon.strength
       const damage = strength * (minDamage + Math.round(Math.random() * (maxDamage - minDamage)))
 
       addAndTransmitAction({
@@ -400,16 +443,16 @@ export default function Fight () {
         }
       })
     }
-    function swapTo (v: Vaccimon) {
+    function swapTo (v: LocalVaccimon) {
       addAndTransmitAction({
         kind: GameActionKind.Swap,
         isLocal: true,
 
         newVaccimon: {
-          name: v.fullName, // TODO only use last name?
+          fullName: v.fullName, // TODO only use last name?
           avatarUrl: v.avatarUrl,
-          strength: calculateStrength(v),
-          health: 100, // TODO store health of already used Vaccímons?
+          strength: v.strength,
+          health: v.health, // TODO store health of already used Vaccímons?
         }
       })
       setShowSwapMenu(false)
@@ -433,7 +476,7 @@ export default function Fight () {
       <AppContainer>
         <AppNavbar title="Fight" />
 
-        <Container>
+        <Container className={styles.gameContainer}>
           <Modal show={!!showSwapMenu} onHide={() => setShowSwapMenu(false)}>
             <Modal.Header closeButton>
               <Modal.Title>Select Vaccímon</Modal.Title>
@@ -441,10 +484,10 @@ export default function Fight () {
             <Modal.Body>
               <ListGroup>
                 {topList.map((v, i) =>
-                  <ListGroup.Item key={i} action onClick={() => swapTo(v)} className={styles.swapVaccimonItem} style={{"--badge-color": getStrengthColor(calculateStrength(v))}}>
+                  <ListGroup.Item key={i} action onClick={() => swapTo(v)} className={styles.swapVaccimonItem} style={{"--badge-color": getStrengthColor(v.strength)}}>
                     <span className={styles.swapVaccimonAvatar}><Image src={v.avatarUrl} width={48} height={48} alt="" /></span>
                     <span className={styles.swapVaccimonName}>{v.fullName}</span>
-                    <span className={styles.swapVaccimonPower}><span>{formatNum(calculateStrength(v))}</span></span>
+                    <span className={styles.swapVaccimonPower}><span>{formatNum(v.strength)}</span></span>
                   </ListGroup.Item>
                 )}
               </ListGroup>
@@ -453,36 +496,38 @@ export default function Fight () {
 
           {renderGame()}
 
-          <h5 className={styles.heading}>Your Turn</h5>
-          <div className="d-grid gap-2">
-            {myVaccimon && getAbilities(myVaccimon).map((ability, i) =>
-              <Button size="lg" key={i} variant="outline-danger" disabled={!opponentVaccimon} onClick={() => performAbility(ability)}>
-                <span className={styles.abilityKind}>Attack:{' '}</span>
-                <span className={styles.abilityName}>{ability.name}</span>
-                <span className={styles.abilityEffects}>
-                  <FontAwesomeIcon icon={faBullseye} fixedWidth />
-                  {Math.round(100 * (1 - ability.failureRate))}%
-                  {ability.maxDamage > 0 && <>
-                    <FontAwesomeIcon icon={faFistRaised} fixedWidth />
-                    {ability.minDamage} - {ability.maxDamage}
-                  </>}
-                  {ability.effects.map((effect, j) =>
-                    <span key={j}>
-                      <FontAwesomeIcon icon={effect === Effect.Poison ? faViruses : faBed} fixedWidth />
-                    </span>
-                  )}
-                </span>
+          <div className={styles.gameActionBoxOurTurn}>
+            <h5 className={styles.heading}>Your Turn</h5>
+            <div className="d-grid gap-2">
+              {myVaccimon && getAbilities(myVaccimon).map((ability, i) =>
+                <Button size="lg" key={i} variant="outline-danger" disabled={!opponentVaccimon} onClick={() => performAbility(ability)}>
+                  <span className={styles.abilityKind}>Attack:{' '}</span>
+                  <span className={styles.abilityName}>{ability.name}</span>
+                  <span className={styles.abilityEffects}>
+                    <FontAwesomeIcon icon={faBullseye} fixedWidth />
+                    {Math.round(100 * (1 - ability.failureRate))}%
+                    {ability.maxDamage > 0 && <>
+                      <FontAwesomeIcon icon={faFistRaised} fixedWidth />
+                      {ability.minDamage} - {ability.maxDamage}
+                    </>}
+                    {ability.effects.map((effect, j) =>
+                      <span key={j}>
+                        <FontAwesomeIcon icon={effect === Effect.Poison ? faViruses : faBed} fixedWidth />
+                      </span>
+                    )}
+                  </span>
+                </Button>
+              )}
+              <Button size="lg" variant="outline-success" onClick={() => skipTurn()}>
+                Skip Turn
               </Button>
-            )}
-            <Button size="lg" variant="outline-success" onClick={() => skipTurn()}>
-              Skip Turn
-            </Button>
-            <Button size="lg" variant="outline-primary" onClick={() => setShowSwapMenu(true)}>
-              Swap Vaccímon
-            </Button>
-            <Button size="lg" variant="outline-secondary" onClick={() => exitMatch()}>
-              Flee
-            </Button>
+              <Button size="lg" variant="outline-primary" onClick={() => setShowSwapMenu(true)}>
+                Swap Vaccímon
+              </Button>
+              <Button size="lg" variant="outline-secondary" onClick={() => exitMatch()}>
+                Flee
+              </Button>
+            </div>
           </div>
         </Container>
       </AppContainer>
@@ -490,13 +535,13 @@ export default function Fight () {
   }
 
   function renderMessageQueue () {
-    const action = gameLog[Math.min(gameLog.length - 1, logPosition)]
     let inner = null
-
+    
+    const action = gameLog[logPosition]
     if (!action) {
       inner = (
         <p>
-          Waiting for first move...
+          Waiting for next move...
         </p>
       )
     } else if (action.kind === GameActionKind.Attack && action.abilityUse && opponentVaccimon && myVaccimon) {
@@ -504,7 +549,7 @@ export default function Fight () {
       inner = (
         <p>
           {action.isLocal ? 'Your ' : 'Your opponents '}
-          <strong>{opponentVaccimon.name}</strong> uses <strong>{use.ability.name}</strong>
+          <strong>{opponentVaccimon.fullName}</strong> uses <strong>{use.ability.name}</strong>
           {(use.damage !== 0 || use.effects.length === 0) &&
             <>
               {' '}dealing <strong>{formatNum(use.damage)}</strong> damage
@@ -524,7 +569,7 @@ export default function Fight () {
       inner = (
         <p>
           {action.isLocal ? 'You swap your Vaccímon to ' : 'Your opponent swaps his Vaccímon to '}
-          <strong>{action.newVaccimon.name}</strong>.
+          <strong>{action.newVaccimon.fullName}</strong>.
         </p>
       )
     } else if (action.kind === GameActionKind.Wait) {
@@ -549,6 +594,9 @@ export default function Fight () {
     }
 
     function performAction () {
+      if (logPosition >= gameLog.length)
+        return;
+
       if (action.kind === GameActionKind.Attack && action.abilityUse) {
         if (action.isLocal && opponentVaccimon) {
           const health = opponentVaccimon.health - action.abilityUse.damage
@@ -561,10 +609,13 @@ export default function Fight () {
             })
           }
         } else if (!action.isLocal && myVaccimon) {
-          const health = myHealth - action.abilityUse.damage
-          setMyHealth(health)
+          const health = myVaccimon.health - action.abilityUse.damage
           if (health <= 0) {
             setMyVaccimon(null)
+          } else {
+            let dup = {...myVaccimon};
+            dup.health = health;
+            setMyVaccimon(dup)
           }
         }
       } else if (action.kind === GameActionKind.Swap && action.newVaccimon) {
@@ -585,13 +636,13 @@ export default function Fight () {
       if (logPosition === gameLog.length - 1 && !action.isLocal) {
         setIsMyTurn(true)
       }
-      setLogPosition(Math.min(gameLog.length, logPosition + 1))
+      setLogPosition(logPosition + 1)
     }
 
     return (
       <AppContainer>
         <AppNavbar title="Fight" />
-        <Container onClick={() => performAction()}>
+        <Container onClick={() => performAction()} className={styles.gameContainer}>
           {renderGame()}
           <div className={styles.gameActionBox}>
             {inner}
