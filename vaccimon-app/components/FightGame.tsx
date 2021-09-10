@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 
@@ -131,14 +131,15 @@ export default function Fight () {
 
   const formatNum = (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })).format
   const getStrengthColor = (strength: number) => {
-    if (strength < 0.7)
-      return "transparent";
-    else if (strength < 1)
-      return "#ffcb00";
-    else if (strength < 2)
-      return "orange";
-    else
-      return "#ff5622";
+    if (strength < 0.7) {
+      return 'transparent'
+    } else if (strength < 1) {
+      return '#ffcb00'
+    } else if (strength < 2) {
+      return 'orange'
+    } else {
+      return '#ff5622'
+    }
   }
 
   const addRemoteAction = useCallback((data: GameAction) => {
@@ -224,7 +225,7 @@ export default function Fight () {
     peer.on('disconnected', () => {
       alert('Connection to Lobby lost :(')
     })
-  }, [])
+  }, [router, connection, addRemoteAction])
 
   const calculateStrength = useCallback(function (v: Vaccimon): number {
     // base strength based on level
@@ -295,7 +296,7 @@ export default function Fight () {
     setIsMyTurn(false)
   }
 
-  function convertToLocalVaccimon(vaccimon: Vaccimon, strength: number): LocalVaccimon {
+  function convertToLocalVaccimon (vaccimon: Vaccimon, strength: number): LocalVaccimon {
     return {
       certificate: vaccimon.certificate,
       id: vaccimon.id,
@@ -315,7 +316,7 @@ export default function Fight () {
     }
   }
 
-  function trickTypescript(val: object): any {
+  function trickTypescript (val: object): any {
     return val
   }
 
@@ -399,21 +400,25 @@ export default function Fight () {
     )
   }
 
-  function renderVaccimon(vaccimon: RemoteVaccimon | LocalVaccimon | null) {
-    if (!vaccimon)
-      return "-"
-    return <>
-      {vaccimon && (
-        <div className={styles.vaccimonImage}>
-          <img src={vaccimon.avatarUrl} alt="" width="1024" height="1024" />
-        </div>
-      )}
-      <span className={styles.vaccimonName}>
-        {vaccimon ? vaccimon.fullName : 'No Vaccimon'}
-      </span>
-      <span className={styles.healthBar} style={trickTypescript({"--health": vaccimon.health})}>
-      </span>
-    </>
+  function renderVaccimon (vaccimon: RemoteVaccimon | LocalVaccimon | null) {
+    if (!vaccimon) {
+      return '-'
+    }
+
+    return (
+      <>
+        {vaccimon && (
+          <div className={styles.vaccimonImage}>
+            <Image src={vaccimon.avatarUrl} alt="" width="1024" height="1024" />
+          </div>
+        )}
+        <span className={styles.vaccimonName}>
+          {vaccimon ? vaccimon.fullName : 'No Vaccimon'}
+        </span>
+        <span className={styles.healthBar} style={trickTypescript({ '--health': vaccimon.health })}>
+        </span>
+      </>
+    )
   }
 
   function renderMyTurn () {
@@ -483,7 +488,7 @@ export default function Fight () {
                     action
                     onClick={() => swapTo(v)}
                     className={styles.swapVaccimonItem}
-                    style={trickTypescript({"--badge-color": getStrengthColor(v.strength)})}>
+                    style={trickTypescript({ '--badge-color': getStrengthColor(v.strength) })}>
                     <span className={styles.swapVaccimonAvatar}><Image src={v.avatarUrl} width={48} height={48} alt="" /></span>
                     <span className={styles.swapVaccimonName}>{v.fullName}</span>
                     <span className={styles.swapVaccimonPower}><span>{formatNum(v.strength)}</span></span>
@@ -535,7 +540,7 @@ export default function Fight () {
 
   function renderMessageQueue () {
     let inner = null
-    
+
     const action = gameLog[logPosition]
     if (!action) {
       inner = (
@@ -593,8 +598,9 @@ export default function Fight () {
     }
 
     function performAction () {
-      if (logPosition >= gameLog.length)
-        return;
+      if (logPosition >= gameLog.length) {
+        return
+      }
 
       if (action.kind === GameActionKind.Attack && action.abilityUse) {
         if (action.isLocal && opponentVaccimon) {
@@ -612,9 +618,7 @@ export default function Fight () {
           if (health <= 0) {
             setMyVaccimon(null)
           } else {
-            let dup = {...myVaccimon};
-            dup.health = health;
-            setMyVaccimon(dup)
+            setMyVaccimon({ ...myVaccimon, health })
           }
         }
       } else if (action.kind === GameActionKind.Swap && action.newVaccimon) {
