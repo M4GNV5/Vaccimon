@@ -1,7 +1,7 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: ['api.hello-avatar.com']
+    domains: ['adorable-avatars.broken.services']
   },
   webpack: config => {
     // required by zbar.wasm

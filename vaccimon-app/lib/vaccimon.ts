@@ -150,8 +150,7 @@ export class Vaccimon {
     const mouth = mouths[mouthR % mouths.length]
     const color = colors[this.vaccine] || 'ffffff'
 
-    // TODO: use a self hosted image service
-    return `https://api.hello-avatar.com/adorables/face/${eye}/${nose}/${mouth}/${color}/256`
+    return `https://adorable-avatars.broken.services/adorables/face/${eye}/${nose}/${mouth}/${color}/256`
   }
 
   get certificateSigner (): string {
