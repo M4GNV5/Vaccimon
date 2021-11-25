@@ -150,7 +150,7 @@ export class Vaccimon {
     const mouth = mouths[mouthR % mouths.length]
     const color = colors[this.vaccine] || 'ffffff'
 
-    return `https://adorable-avatars.broken.services/adorables/face/${eye}/${nose}/${mouth}/${color}/256`
+    return `https://adorable-avatars.broken.services/face/${eye}/${nose}/${mouth}/${color}/256`
   }
 
   get certificateSigner (): string {
