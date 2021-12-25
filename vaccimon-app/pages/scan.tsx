@@ -74,9 +74,9 @@ export default function Scan () {
 
           router.push(`/card#${cert.id}`)
           success = true
-        } catch (e) {
+        } catch (e: any) {
           console.error(e)
-          message = e.message
+          message = e?.message || 'Failed handling certificate'
         }
       }))
 
@@ -84,9 +84,9 @@ export default function Scan () {
         router.push('/vaccidex')
         alert(`Could not parse QR Code. Please make sure it is a valid vaccination certificate.\n${message}`)
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
-      alert(e.message)
+      alert(e?.message || 'Failed scanning for QR codes')
     }
   }, [router, video, canvas, scanning])
 

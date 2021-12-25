@@ -180,7 +180,7 @@ export default function Fight () {
 
       conn.on('error', e => {
         console.error(e)
-        alert(e.message)
+        alert(e?.message || 'Connection error :(')
       })
 
       conn.on('close', () => {

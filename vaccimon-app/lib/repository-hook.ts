@@ -24,9 +24,9 @@ export default function useVaccimon (): Vaccimon[] {
           .sort((a, b) => a.firstName.localeCompare(b.firstName))
           .sort((a, b) => a.lastName.localeCompare(b.lastName))
         setVaccimon(vaccimon)
-      } catch (e) {
+      } catch (e: any) {
         console.error(e)
-        alert(e.message)
+        alert(e?.message || 'Failed loading your Vaccímons')
       } finally {
         await repo.close()
       }

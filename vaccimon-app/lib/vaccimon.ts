@@ -77,8 +77,8 @@ export class Vaccimon {
   static async parse (data: string, vaccination: number = 0, validate: boolean = false) {
     try {
       assert(!validate || !!await window.EuDgc_validate(data), 'Signature is invalid')
-    } catch (e) {
-      throw new Error(`Failed to validate certificate (${e.message || e})`)
+    } catch (e: any) {
+      throw new Error(`Failed to validate certificate (${e?.message || e})`)
     }
     const cert = await window.EuDgc_parse(data)
     return new Vaccimon(data, cert, vaccination)
