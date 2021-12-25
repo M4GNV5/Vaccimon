@@ -20,6 +20,8 @@ export default function useVaccimon (): Vaccimon[] {
           }
         })))
           .filter((x): x is Vaccimon => !!x)
+          .sort((a, b) => a.vaccinationDate.getTime() - b.vaccinationDate.getTime())
+          .sort((a, b) => a.firstName.localeCompare(b.firstName))
           .sort((a, b) => a.lastName.localeCompare(b.lastName))
         setVaccimon(vaccimon)
       } catch (e) {

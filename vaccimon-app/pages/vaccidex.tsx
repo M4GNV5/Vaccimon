@@ -19,7 +19,7 @@ export default function Vaccidex () {
             <a className={styles.preview}>
               <Image src={v.avatarUrl} width={64} height={64} alt="" />
               <div className={styles.name}>
-                {v.lastName}
+                {v.firstName.substring(0, 1)}. {v.lastName}
               </div>
             </a>
           </Link>
