@@ -127,6 +127,10 @@ export class Vaccimon {
 
     if (!this.isFullyVaccinated) {
       return 1
+    } else if (this.isBoostered && this.vaccinationDate > immune) {
+      return 3
+    } else if (this.isBoostered) {
+      return 4
     } else if (this.vaccinationDate > immune) {
       return 2
     } else {
@@ -159,5 +163,9 @@ export class Vaccimon {
 
   get isFullyVaccinated (): boolean {
     return this._vaccination.sd === this._vaccination.dn
+  }
+
+  get isBoostered (): boolean {
+    return this._vaccination.sd >= 3
   }
 }
