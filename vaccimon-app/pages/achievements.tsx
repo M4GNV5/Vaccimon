@@ -36,6 +36,12 @@ export const achievements: Achievement[] = [
     condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.fullName === y.fullName))
   },
   {
+    name: 'BOOOOSTER',
+    description: 'Catch a boosted Vaccímon',
+    difficulty: AchievementDiffuculty.Easy,
+    condition: vaccidex => vaccidex.some(x => x.isBoostered)
+  },
+  {
     name: 'German Engineering',
     description: 'Catch your first Comirnaty Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
@@ -97,15 +103,15 @@ export const achievements: Achievement[] = [
   },
   {
     name: 'Shorthand',
-    description: 'Scan someone with a full name length of maximum 8 characters',
+    description: 'Scan someone with a full name length of maximum 10 characters',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.fullName.length <= 8)
+    condition: vaccidex => vaccidex.some(x => x.fullName.length <= 10)
   },
   {
     name: 'Accuracte Description',
     description: 'Scan someone with a name containing at least four parts',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.fullName.replace('-', ' ').split(' ').length >= 4)
+    condition: vaccidex => vaccidex.some(x => x.fullName.replace(/\-/g, ' ').split(' ').length >= 4)
   },
   {
     name: 'We are Family',
@@ -114,10 +120,16 @@ export const achievements: Achievement[] = [
     condition: vaccidex => vaccidex.some(x => vaccidex.filter(y => x.lastName === y.lastName).length >= 3)
   },
   {
+    name: 'Family Gathering',
+    description: 'Catch seven or more Vaccímon with the same family name',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => vaccidex.some(x => vaccidex.filter(y => x.lastName === y.lastName).length >= 7)
+  },
+  {
     name: 'This is Technology Test!',
     description: 'Catch a test Vaccímon',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.lastName === 'Mustermann')
+    condition: vaccidex => vaccidex.some(x => x.lastName.startsWith('Muster'))
   },
   {
     name: 'Is this digital?',
@@ -131,7 +143,7 @@ export const achievements: Achievement[] = [
   },
   {
     name: 'Beta Tester',
-    description: 'Catch a certificate with vaccination date before April 2021',
+    description: 'Catch a certificate with vaccination date before March 2021',
     difficulty: AchievementDiffuculty.Medium,
     condition: vaccidex => vaccidex.some(x => x.vaccinationDate < (new Date(2021, 3, 1)))
   },
@@ -172,7 +184,25 @@ export const achievements: Achievement[] = [
     name: 'Wait never mind',
     description: 'Catch a Vaccímon with mixed vaccines',
     difficulty: AchievementDiffuculty.Easy,
-    condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.fullName === y.fullName && x.vaccine !== y.vaccine))
+    condition: vaccidex => vaccidex.some(x =>
+      vaccidex.some(y => x.fullName === y.fullName && x.vaccine !== y.vaccine)
+    )
+  },
+  {
+    name: 'Gotta catch them all',
+    description: 'Catch a Vaccímon vaccinated with three or more different vaccines',
+    difficulty: AchievementDiffuculty.Medium,
+    condition: vaccidex => vaccidex.some(x =>
+      new Set(vaccidex.filter(y => x.fullName === y.fullName).map(y => y.vaccine)).size >= 3
+    )
+  },
+  {
+    name: 'Addict',
+    description: 'Catch more than four certificates of the same Vaccímon',
+    difficulty: AchievementDiffuculty.Hard,
+    condition: vaccidex => vaccidex.some(x =>
+      vaccidex.filter(y => x.fullName === y.fullName).length >= 4
+    )
   },
   {
     name: 'ZDF',
@@ -204,7 +234,7 @@ export const achievements: Achievement[] = [
   },
   {
     name: 'Multilingual',
-    description: 'Catch a vaccimon with a non-latin name',
+    description: 'Catch a Vaccímon with a non-latin name',
     difficulty: AchievementDiffuculty.Medium,
     condition: vaccidex => vaccidex.some(x => !/[a-zA-Z]/.test(x.fullName))
   }
