@@ -43,7 +43,7 @@ function assert (condition: boolean, message: string) {
  */
 function fixCapsLock (str: string): string {
   if (str === str.toUpperCase()) {
-    return str.replace(/[^ -]+/g, x => x.substr(0, 1) + x.substr(1).toLowerCase())
+    return str.replace(/[^ -]+/g, x => x.substring(0, 1) + x.substring(1).toLowerCase())
   } else {
     return str
   }
@@ -98,6 +98,13 @@ export class Vaccimon {
 
   get firstName (): string {
     return fixCapsLock(this._cert.nam.gn)
+  }
+
+  get firstNames (): string[] {
+    return this._cert.nam.gn
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(x => fixCapsLock(x.trim()))
   }
 
   get lastName (): string {
@@ -167,5 +174,11 @@ export class Vaccimon {
 
   get isBoostered (): boolean {
     return this._vaccination.sd >= 3
+  }
+
+  personEquals (other: Vaccimon): boolean {
+    return this.lastName === other.lastName &&
+      this.firstNames[0] === other.firstNames[0] &&
+      this.dateOfBirth === other.dateOfBirth
   }
 }

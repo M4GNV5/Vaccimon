@@ -33,7 +33,7 @@ export const achievements: Achievement[] = [
     name: 'Fully Vaccinated',
     description: 'Catch both levels of the same Vaccímon',
     difficulty: AchievementDiffuculty.Easy,
-    condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.fullName === y.fullName))
+    condition: vaccidex => vaccidex.some(x => vaccidex.some(y => x.personEquals(y)))
   },
   {
     name: 'BOOOOSTER',
@@ -111,7 +111,7 @@ export const achievements: Achievement[] = [
     name: 'Accuracte Description',
     description: 'Scan someone with a name containing at least four parts',
     difficulty: AchievementDiffuculty.Medium,
-    condition: vaccidex => vaccidex.some(x => x.fullName.replace(/\-/g, ' ').split(' ').length >= 4)
+    condition: vaccidex => vaccidex.some(x => x.fullName.replace(/-/g, ' ').split(' ').length >= 4)
   },
   {
     name: 'We are Family',
@@ -161,13 +161,13 @@ export const achievements: Achievement[] = [
     name: 'Traveler',
     description: 'Catch Vaccímons from three different countries',
     difficulty: AchievementDiffuculty.Hard,
-    condition: vaccidex => new Set(vaccidex.map(x => x.certificateSigner)).size >= 3
+    condition: vaccidex => new Set(vaccidex.map(x => x.country)).size >= 3
   },
   {
     name: 'Super Spreader',
     description: 'Catch Vaccímons from five different countries',
     difficulty: AchievementDiffuculty.Hard,
-    condition: vaccidex => new Set(vaccidex.map(x => x.certificateSigner)).size >= 5
+    condition: vaccidex => new Set(vaccidex.map(x => x.country)).size >= 5
   },
   {
     name: 'Communism',
@@ -185,7 +185,7 @@ export const achievements: Achievement[] = [
     description: 'Catch a Vaccímon with mixed vaccines',
     difficulty: AchievementDiffuculty.Easy,
     condition: vaccidex => vaccidex.some(x =>
-      vaccidex.some(y => x.fullName === y.fullName && x.vaccine !== y.vaccine)
+      vaccidex.some(y => x.personEquals(y) && x.vaccine !== y.vaccine)
     )
   },
   {
@@ -193,7 +193,7 @@ export const achievements: Achievement[] = [
     description: 'Catch a Vaccímon vaccinated with three or more different vaccines',
     difficulty: AchievementDiffuculty.Medium,
     condition: vaccidex => vaccidex.some(x =>
-      new Set(vaccidex.filter(y => x.fullName === y.fullName).map(y => y.vaccine)).size >= 3
+      new Set(vaccidex.filter(y => x.personEquals(y)).map(y => y.vaccine)).size >= 3
     )
   },
   {
@@ -201,7 +201,7 @@ export const achievements: Achievement[] = [
     description: 'Catch more than four certificates of the same Vaccímon',
     difficulty: AchievementDiffuculty.Hard,
     condition: vaccidex => vaccidex.some(x =>
-      vaccidex.filter(y => x.fullName === y.fullName).length >= 4
+      vaccidex.filter(y => x.personEquals(y)).length >= 4
     )
   },
   {
