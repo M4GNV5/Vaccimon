@@ -21,7 +21,15 @@ export default function Vaccidex () {
     const text = JSON.stringify(data)
 
     navigator.clipboard.writeText(text)
-    prompt('Copy the string below', text)
+
+    const elem = document.createElement('a')
+    elem.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text))
+    elem.setAttribute('download', 'vaccidex.json')
+
+    elem.style.display = 'none'
+    document.body.appendChild(elem)
+    elem.click()
+    document.body.removeChild(elem)
   }
 
   return (
